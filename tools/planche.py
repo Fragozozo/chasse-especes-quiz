@@ -1,5 +1,5 @@
 # Planche contact des photos candidates d'une ou plusieurs espèces, pour les choisir à l'œil.
-# Usage : python3 tools/planche.py <dossier de travail> <sortie.jpg> <id> [id…]
+# Usage : python3 tools/planche.py <dossier de travail> <sortie.jpg> <id>[:premier numéro] [id…]
 import json, sys
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
@@ -11,8 +11,9 @@ petite = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 15)
 
 blocs = []
 for i in ids:
+    i, _, debut = i.partition(":")
     meta = json.loads((travail / i / "meta.json").read_text())
-    blocs.append((i, meta))
+    blocs.append((i, [ph for ph in meta if ph["n"] >= int(debut or 0)]))
 hauteur = sum(32 + ((len(m) + COLS - 1) // COLS) * (H + 4) for _, m in blocs)
 img = Image.new("RGB", (COLS * (W + 4), max(hauteur, 40)), "white")
 d = ImageDraw.Draw(img)

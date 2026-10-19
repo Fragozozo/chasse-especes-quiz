@@ -138,18 +138,31 @@ function qTrace(e) {
   };
 }
 
+// Nom propre utilisable en quiz : forme courte (« Verrat »), et pas le nom de l'espèce elle-même (« Daim »).
+const nomQuiz = (e, role) => {
+  const n = nomPropre(e, role).split(" (")[0];
+  return n && motCle(n) !== motCle(e.nom) ? n : "";
+};
+// Nombre d'espèces qui partagent chaque mot (« Caneton » : tous les canards).
+const partage = {};
+for (const e of ESPECES) for (const r of Object.keys(ROLES)) {
+  const n = nomQuiz(e, r);
+  if (n) partage[`${r}:${motCle(n)}`] = (partage[`${r}:${motCle(n)}`] || 0) + 1;
+}
+
 // Vocabulaire : « Chevreuil : comment s'appelle la femelle ? » ou « La hase est la femelle de… ».
 function qVocabulaire(e) {
-  const roles = Object.keys(ROLES).filter((r) => nomPropre(e, r));
+  const roles = Object.keys(ROLES).filter((r) => nomQuiz(e, r));
   const role = tirer(roles, 1)[0];
-  const bonne = nomPropre(e, role);
+  const bonne = nomQuiz(e, role);
   const libelle = { male: "le mâle", femelle: "la femelle", jeune: "le jeune" }[role];
-  const memeMot = (x) => nomPropre(x, role) && motCle(nomPropre(x, role)) === motCle(bonne);
-  if (Math.random() < 0.5) {
+  const memeMot = (x) => nomQuiz(x, role) && motCle(nomQuiz(x, role)) === motCle(bonne);
+  // La question inverse n'a de sens que pour un mot propre à une ou deux espèces.
+  if (partage[`${role}:${motCle(bonne)}`] > 2 || Math.random() < 0.5) {
     const vus = new Set([motCle(bonne)]);
     const leurres = [];
-    for (const x of melanger(ESPECES)) {
-      const n = nomPropre(x, role);
+    for (const x of melanger(ESPECES.filter((x) => estOiseau(x) === estOiseau(e)))) {
+      const n = nomQuiz(x, role);
       if (!n || vus.has(motCle(n))) continue;
       vus.add(motCle(n));
       leurres.push(n);
@@ -163,23 +176,30 @@ function qVocabulaire(e) {
     };
   }
   const leurres = tirer(ESPECES.filter((x) => x.id !== e.id && !memeMot(x) && estOiseau(x) === estOiseau(e)), 3);
-  const mot = bonne.split(" (")[0];
   return {
     type: "vocabulaire", espece: e,
-    titre: `« ${mot} » désigne ${libelle} de quel animal ?`,
+    titre: `« ${bonne} » désigne ${libelle} de quel animal ?`,
     choix: melanger([e, ...leurres]).map((x) => ({ cle: x.id, label: x.nom })),
     bonne: e.id,
-    // Plusieurs espèces peuvent partager le même mot (bouquin, hase…) : toutes sont justes.
+    // Deux espèces peuvent partager le même mot (bouquin, hase) : les deux sont justes.
     justes: ESPECES.filter(memeMot).map((x) => x.id),
   };
 }
-const aVocabulaire = (e) => Object.keys(ROLES).some((r) => nomPropre(e, r));
+const aVocabulaire = (e) => Object.keys(ROLES).some((r) => nomQuiz(e, r));
 
 // Reproduction des mammifères : période ou durée de gestation.
 function qReproduction(e) {
   const champ = Math.random() < 0.5 ? "periode" : "duree";
   const bonne = e.repro[champ];
-  const pool = [...new Set(ESPECES.filter((x) => !estOiseau(x) && x.repro?.[champ] && x.repro[champ] !== bonne).map((x) => x.repro[champ]))];
+  // « Rut en octobre » et « Accouplement en octobre » disent la même chose : on compare sans le premier mot.
+  const fond = (t) => t.replace(/^(Rut|Accouplement|Reproduction)( surtout| principalement)? /, "").replace(/^Environ /, "");
+  const vus = new Set([fond(bonne)]);
+  const pool = [];
+  for (const x of melanger(ESPECES.filter((x) => !estOiseau(x) && x.repro?.[champ]))) {
+    if (vus.has(fond(x.repro[champ]))) continue;
+    vus.add(fond(x.repro[champ]));
+    pool.push(x.repro[champ]);
+  }
   return {
     type: "reproduction", espece: e,
     titre: champ === "periode" ? `${e.nom} : quand a lieu la reproduction ?` : `${e.nom} : quelle est la durée de la gestation ?`,

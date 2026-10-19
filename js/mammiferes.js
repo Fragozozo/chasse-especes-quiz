@@ -134,7 +134,7 @@ export const MAMMIFERES = [
   {
     id: "chamois", nom: "Chamois", latin: "Rupicapra rupicapra", groupe: "grand", statut: "chassable",
     taille: "70 à 80 cm au garrot", poids: "25 à 45 kg",
-    noms: { male: "Bouc", femelle: "Chèvre (ou étagne)", jeune: "Cabri (éterlou ou éterle à 1 an)" },
+    noms: { male: "Bouc", femelle: "Chèvre", jeune: "Cabri (éterlou ou éterle à 1 an)" },
     signes: [
       "Ongulé de montagne aux pattes robustes",
       "Pelage brun-roux en été, brun-noir en hiver, raie sombre sur le dos",
@@ -159,7 +159,7 @@ export const MAMMIFERES = [
   {
     id: "isard", nom: "Isard", latin: "Rupicapra pyrenaica", groupe: "grand", statut: "chassable",
     taille: "65 à 75 cm au garrot", poids: "20 à 35 kg",
-    noms: { male: "Bouc", femelle: "Chèvre (ou étagne)", jeune: "Cabri (éterlou ou éterle à 1 an)" },
+    noms: { male: "Bouc", femelle: "Chèvre", jeune: "Cabri (éterlou ou éterle à 1 an)" },
     signes: [
       "Proche du chamois, en plus petit et plus élancé",
       "Pelage d'été roux clair, pelage d'hiver brun sombre avec des taches claires au cou, aux épaules et aux flancs",

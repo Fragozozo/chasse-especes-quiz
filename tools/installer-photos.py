@@ -1,7 +1,7 @@
 # Installe dans photos/ les photos choisies dans tools/selection.json et écrit photos/credits.json.
 # selection.json : { "id": ["03m", "07f", "11j", "02"] } = numéro de la candidate + rôle (m mâle, f femelle, j jeune).
 # Usage : python3 tools/installer-photos.py <dossier de travail des candidates>
-import io, json, sys, time, urllib.request, urllib.error
+import io, json, re, sys, time, urllib.parse, urllib.request, urllib.error
 from pathlib import Path
 from PIL import Image
 
@@ -10,6 +10,14 @@ TRAVAIL = Path(sys.argv[1])
 UA = "chasse-especes-quiz/1.0 (https://github.com/Fragozozo/chasse-especes-quiz ; application pédagogique)"
 ROLES = {"m": "male", "f": "femelle", "j": "jeune", "": ""}
 LARGEUR = 800
+
+def auteur_court(a):
+    # Certaines fiches Commons mettent un long texte dans le champ auteur : on garde l'essentiel.
+    a = re.sub(r"\s*Camera location.*$", "", a)
+    m = re.search(r"taken by ([^.]+?) and released", a)
+    if m:
+        a = m.group(1)
+    return a if len(a) <= 80 else a[:77].rstrip() + "…"
 
 def telecharger(url):
     for essai in range(6):
@@ -39,7 +47,7 @@ for id_, choix in selection.items():
         deja = next((a for a in anciens.get(id_, []) if a["fichier"] == ph["fichier"]), None)
         cible = RACINE / "photos" / nom
         if deja and deja["fichierLocal"] == nom and cible.exists():
-            liste.append({**deja, "role": role})
+            liste.append({**deja, "role": role, "auteur": auteur_court(deja["auteur"])})
             continue
         url = ph["vignette"].split("?")[0]
         url = url.replace("/500px-", "/960px-").replace("/400px-", "/960px-")
@@ -54,7 +62,7 @@ for id_, choix in selection.items():
         img.save(cible, quality=78, optimize=True, progressive=True)
         liste.append({
             "fichierLocal": nom, "role": role, "fichier": ph["fichier"],
-            "auteur": ph["auteur"], "licence": ph["licence"], "licenceUrl": ph["licenceUrl"],
+            "auteur": auteur_court(ph["auteur"]), "licence": ph["licence"], "licenceUrl": ph["licenceUrl"],
             "source": "https://commons.wikimedia.org/wiki/File:" + urllib.parse.quote(ph["fichier"]),
         })
         time.sleep(1)
