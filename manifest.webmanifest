@@ -1,0 +1,17 @@
+{
+  "name": "Faune et chasse : quiz du permis",
+  "short_name": "Faune chasse",
+  "description": "Quiz et fiches pour reconnaître le gibier, les ESOD et les espèces protégées, pour l'examen du permis de chasser.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef1ea",
+  "theme_color": "#2f4a2a",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

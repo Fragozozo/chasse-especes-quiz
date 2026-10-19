@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Faune et chasse</title>
+  <meta name="description" content="Quiz et fiches pour reconnaître le gibier, les ESOD et les espèces protégées, pour l'examen du permis de chasser.">
+  <meta name="theme-color" content="#2f4a2a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Faune chasse">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Zilla+Slab:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/app.css?v=1">
+</head>
+<body>
+  <main id="app" aria-live="polite"></main>
+  <nav class="onglets" aria-label="Navigation">
+    <div class="onglets-inner">
+      <button type="button" class="onglet" data-vue="accueil">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+        Entraînement
+      </button>
+      <button type="button" class="onglet" data-vue="fiches">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg>
+        Fiches
+      </button>
+      <button type="button" class="onglet" data-vue="infos">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>
+        Infos
+      </button>
+    </div>
+  </nav>
+  <script type="module" src="js/app.js?v=1"></script>
+</body>
+</html>
