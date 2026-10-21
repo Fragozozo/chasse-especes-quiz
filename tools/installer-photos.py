@@ -1,12 +1,18 @@
 # Installe dans photos/ les photos choisies dans tools/selection.json et écrit photos/credits.json.
 # selection.json : { "id": ["03m", "07f", "11j", "02"] } = numéro de la candidate + rôle (m mâle, f femelle, j jeune).
 # Usage : python3 tools/installer-photos.py <dossier de travail des candidates>
+#         python3 tools/installer-photos.py <dossier des empreintes> --traces
+#         (photos d'empreintes : tools/selection-traces.json → photos/traces/ et photos/traces.json)
 import io, json, re, sys, time, urllib.parse, urllib.request, urllib.error
 from pathlib import Path
 from PIL import Image
 
 RACINE = Path(__file__).resolve().parent.parent
 TRAVAIL = Path(sys.argv[1])
+TRACES = "--traces" in sys.argv
+SELECTION = RACINE / ("tools/selection-traces.json" if TRACES else "tools/selection.json")
+DOSSIER = RACINE / ("photos/traces" if TRACES else "photos")
+CREDITS = RACINE / ("photos/traces.json" if TRACES else "photos/credits.json")
 UA = "chasse-especes-quiz/1.0 (https://github.com/Fragozozo/chasse-especes-quiz ; application pédagogique)"
 ROLES = {"m": "male", "f": "femelle", "j": "jeune", "": ""}
 LARGEUR = 800
@@ -33,8 +39,9 @@ def telecharger(url):
             time.sleep(attente)
     raise RuntimeError("trop de tentatives")
 
-selection = json.loads((RACINE / "tools/selection.json").read_text())
-credits_path = RACINE / "photos/credits.json"
+DOSSIER.mkdir(exist_ok=True)
+selection = json.loads(SELECTION.read_text())
+credits_path = CREDITS
 anciens = json.loads(credits_path.read_text()) if credits_path.exists() else {}
 sortie = {}
 for id_, choix in selection.items():
@@ -45,7 +52,7 @@ for id_, choix in selection.items():
         ph = meta[n]
         nom = f"{id_}-{k}.jpg"
         deja = next((a for a in anciens.get(id_, []) if a["fichier"] == ph["fichier"]), None)
-        cible = RACINE / "photos" / nom
+        cible = DOSSIER / nom
         if deja and deja["fichierLocal"] == nom and cible.exists():
             liste.append({**deja, "role": role, "auteur": auteur_court(deja["auteur"])})
             continue

@@ -399,3 +399,6 @@ html, body { overflow-x: hidden; }
 .trace-grande .trace-svg { max-height: 240px; }
 .trace-fiche { display: flex; gap: 14px; align-items: center; }
 .trace-petite { width: 96px; height: 96px; flex: none; padding: 8px; border-radius: 12px; background: var(--surface); border: 1.5px solid var(--trait); }
+
+/* Photos d'empreintes dans les fiches */
+.rubrique .credit { margin-top: -4px; }

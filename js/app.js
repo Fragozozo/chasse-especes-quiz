@@ -1,5 +1,5 @@
-import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES, SAVOIRS } from "./especes.js?v=1";
-import { TRACES } from "./traces.js?v=1";
+import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES, SAVOIRS } from "./especes.js?v=3";
+import { TRACES } from "./traces.js?v=3";
 
 // ---------- Utilitaires ----------
 const $ = (sel, el = document) => el.querySelector(sel);
@@ -64,19 +64,23 @@ const maitrisee = (id) => {
   return s && s.dernier && s.ok >= 2;
 };
 
-// ---------- Photos (photos/credits.json, fichiers embarqués dans photos/) ----------
+// ---------- Photos (photos/credits.json et photos/traces.json, fichiers embarqués) ----------
+// Les photos d'empreintes sont dans photos/traces/ ; sans photo, on montre le schéma de traces.js.
 let photos = {};
-async function chargerPhotos() {
+let photosTraces = {};
+async function chargerCredits(fichier, dossier) {
   try {
-    const r = await fetch("photos/credits.json?v=1");
+    const r = await fetch(`${fichier}?v=3`);
     if (!r.ok) return {};
     const d = await r.json();
-    for (const liste of Object.values(d)) for (const p of liste) p.src = "photos/" + p.fichierLocal;
+    for (const liste of Object.values(d)) for (const p of liste) p.src = dossier + p.fichierLocal;
     return d;
   } catch {
     return {};
   }
 }
+const chargerPhotos = () => chargerCredits("photos/credits.json", "photos/");
+const chargerTraces = () => chargerCredits("photos/traces.json", "photos/traces/");
 const toutesPhotos = (id) => photos[id] || [];
 const aPhoto = (e) => toutesPhotos(e.id).length > 0;
 const tirerPhoto = (id, role) => tirer(toutesPhotos(id).filter((p) => !role || p.role === role), 1)[0] || null;
@@ -131,7 +135,7 @@ function qTrace(e) {
     if (leurres.length === 3) break;
   }
   return {
-    type: "trace", espece: e,
+    type: "trace", espece: e, photoTrace: tirer(photosTraces[e.id] || [], 1)[0] || null,
     titre: "Quel animal laisse cette empreinte ?",
     choix: melanger([e, ...leurres]).map((x) => ({ cle: x.id, label: x.nom })),
     bonne: e.id,
@@ -269,7 +273,10 @@ function construireQuiz(mode) {
   } else if (mode === "sexe") {
     questions = choisir(base.filter(aRoles), 10).map(qSexe);
   } else if (mode === "traces") {
-    questions = choisir(base.filter((e) => e.trace), 10).map(qTrace);
+    // Surtout des photos d'empreintes, complétées par des schémas.
+    const avecPhoto = base.filter((e) => e.trace && photosTraces[e.id]?.length);
+    const pris = choisir(avecPhoto, 7);
+    questions = melanger([...pris, ...choisir(base.filter((e) => e.trace && !pris.includes(e)), 10 - pris.length)]).map(qTrace);
   } else if (mode === "biologie") {
     const voc = base.filter(aVocabulaire);
     const rep = base.filter((e) => !estOiseau(e));
@@ -378,7 +385,7 @@ function explication(q) {
   let detail = "";
   if (q.type === "statut") detail = `<p>${h(e.chasse)}</p>`;
   else if (q.type === "sexe") detail = `<p>${h(e.sexes)}</p>`;
-  else if (q.type === "trace") detail = `<p>${h(TRACES[e.trace].nom)} (${h(TRACES[e.trace].taille)}). ${h(e.traces)}</p>`;
+  else if (q.type === "trace") detail = `<p>${h(e.traces)}</p>${q.photoTrace ? creditHtml(q.photoTrace) : `<p class="petit">${h(TRACES[e.trace].nom)} (${h(TRACES[e.trace].taille)}), schéma simplifié.</p>`}`;
   else if (q.type === "vocabulaire") {
     const noms = Object.keys(ROLES).filter((r) => nomPropre(e, r)).map((r) => `${ROLES[r]} : ${nomPropre(e, r)}`);
     detail = `<p>${h(noms.join(" · "))}</p>`;
@@ -404,7 +411,7 @@ function rendreQuiz() {
 
   let media = "";
   if (q.photo !== undefined) media = photoHtml(q.photo);
-  else if (q.type === "trace") media = `<div class="trace-grande">${TRACES[q.espece.trace].dessin}</div>`;
+  else if (q.type === "trace") media = q.photoTrace ? photoHtml(q.photoTrace) : `<div class="trace-grande">${TRACES[q.espece.trace].dessin}</div>`;
 
   const choix = q.choix.map((c) => {
     let etatChoix = "";
@@ -608,7 +615,8 @@ function rendreFiche(photoChoisie) {
       <p>${h(e.repro.texte)}</p>`)}
     ${section("Particularités", `<p>${h(e.particularites)}</p>`)}
     ${section("Traces", `
-      ${t ? `<div class="trace-fiche"><div class="trace-petite">${t.dessin}</div><p class="petit"><strong>${h(t.nom)}</strong><br>${h(t.taille)} · schéma simplifié</p></div>` : ""}
+      ${(photosTraces[e.id] || []).map((p) => `${photoHtml(p, "photo photo-trace")}${creditHtml(p)}`).join("")}
+      ${t && !photosTraces[e.id]?.length ? `<div class="trace-fiche"><div class="trace-petite">${t.dessin}</div><p class="petit"><strong>${h(t.nom)}</strong><br>${h(t.taille)} · schéma simplifié</p></div>` : ""}
       <p>${h(e.traces)}</p>`)}
     ${section("Risques de confusion", `<p>${h(e.confusions)}</p>`)}
     ${s ? `<p class="petit">Mes réponses : ${s.ok} bonne${s.ok > 1 ? "s" : ""} sur ${s.total}</p>` : ""}
@@ -646,7 +654,7 @@ function rendreFiche(photoChoisie) {
 
 // ---------- Infos ----------
 async function prechargerPhotos(onAvance) {
-  const liste = Object.values(photos).flat().map((p) => p.src);
+  const liste = [...Object.values(photos), ...Object.values(photosTraces)].flat().map((p) => p.src);
   let fait = 0;
   for (let i = 0; i < liste.length; i += 6) {
     await Promise.all(liste.slice(i, i + 6).map((src) => fetch(src).catch(() => {})));
@@ -657,6 +665,7 @@ async function prechargerPhotos(onAvance) {
 
 function rendreInfos() {
   const nbPhotos = Object.values(photos).flat().length;
+  const nbTraces = Object.values(photosTraces).flat().length;
   const standalone = window.matchMedia?.("(display-mode: standalone)").matches || navigator.standalone;
   app().innerHTML = `
     <header class="entete compacte"><h1>Infos</h1></header>
@@ -673,7 +682,7 @@ function rendreInfos() {
 
     <section class="bloc">
       <h2>Utilisation hors connexion</h2>
-      <p>${nbPhotos} photos pour ${ESPECES.filter(aPhoto).length} espèces sur ${ESPECES.length}. Télécharge-les pour réviser sans réseau.</p>
+      <p>${nbPhotos} photos pour ${ESPECES.filter(aPhoto).length} espèces sur ${ESPECES.length}, et ${nbTraces} photos d'empreintes. Télécharge-les pour réviser sans réseau.</p>
       <button type="button" class="bouton" id="precharger">Télécharger les photos</button>
       <p id="etat-telechargement" class="petit" role="status"></p>
     </section>
@@ -694,10 +703,10 @@ function rendreInfos() {
 
     <section class="bloc">
       <h2>Sources et crédits photo</h2>
-      <p class="petit">Contenu pédagogique rédigé pour la préparation à l'examen du permis de chasser, à compléter avec le manuel officiel de l'OFB. Les dessins d'empreintes sont des schémas simplifiés. Photos sous licence libre provenant de Wikimedia Commons ; chaque auteur est cité ci-dessous.</p>
+      <p class="petit">Contenu pédagogique rédigé pour la préparation à l'examen du permis de chasser, à compléter avec le manuel officiel de l'OFB. Quand aucune photo d'empreinte libre n'a été trouvée, l'empreinte est montrée par un schéma simplifié. Photos sous licence libre provenant de Wikimedia Commons ; chaque auteur est cité ci-dessous.</p>
       <ul class="credits">
         ${ESPECES.map((e) => {
-          const liste = toutesPhotos(e.id);
+          const liste = [...toutesPhotos(e.id), ...(photosTraces[e.id] || []).map((p) => ({ ...p, auteur: `empreinte : ${p.auteur || "Wikimedia Commons"}` }))];
           if (!liste.length) return "";
           return `<li><strong>${h(e.nom)}</strong> : ${liste.map((p) => `${h(p.auteur || "Wikimedia Commons")}${p.licence ? `, ${h(p.licence)}` : ""}${p.source ? ` (<a href="${h(p.source)}" target="_blank" rel="noopener">source</a>)` : ""}`).join(" ; ")}</li>`;
         }).join("")}
@@ -735,8 +744,9 @@ function rendre() {
 // ---------- Démarrage ----------
 document.querySelectorAll(".onglet").forEach((b) => b.addEventListener("click", () => aller(b.dataset.vue)));
 rendre();
-chargerPhotos().then((p) => {
+Promise.all([chargerPhotos(), chargerTraces()]).then(([p, t]) => {
   photos = p;
+  photosTraces = t;
   if (["fiches", "fiche", "infos"].includes(etat.vue)) rendre();
 });
 

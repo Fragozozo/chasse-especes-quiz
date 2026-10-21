@@ -11,7 +11,7 @@ En ligne : https://fragozozo.github.io/chasse-especes-quiz/
   migrateurs terrestres, corvidés, canards et oies, limicoles et oiseaux d'eau, rapaces.
 - Pour chaque espèce, une fiche : statut (chassable, ESOD, chasse suspendue, protégée), taille et poids,
   identification, mâle / femelle / jeune et leur nom, habitat, alimentation, reproduction, particularités,
-  empreinte (schéma), risques de confusion.
+  empreinte (photo pour 32 espèces, schéma simplifié sinon), risques de confusion.
 - 3 à 5 photos par espèce, en distinguant mâle, femelle et jeune quand c'est utile.
 - Entraînements, sur toutes les espèces ou par thème (groupe, ESOD, espèces protégées) : reconnaître
   l'espèce, tirer ou ne pas tirer (statut), mâle / femelle / jeune, empreintes, reproduction et vocabulaire,
@@ -26,6 +26,10 @@ affichés dans l'app (onglet Infos et sous chaque photo).
 2. `python3 tools/planche.py <dossier> planche.jpg <id> …` fabrique une planche contact pour les comparer.
 3. Noter les photos gardées dans `tools/selection.json` (numéro + `m` mâle, `f` femelle, `j` jeune).
 4. `python3 tools/installer-photos.py <dossier>` les installe dans `photos/` et écrit `photos/credits.json`.
+
+Photos d'empreintes : même démarche avec `--traces` (`node tools/candidats-photos.mjs <autre dossier> --traces`,
+choix dans `tools/selection-traces.json`, puis `python3 tools/installer-photos.py <autre dossier> --traces`,
+qui remplit `photos/traces/` et `photos/traces.json`). Sans photo, l'app montre le schéma de `js/traces.js`.
 
 ## Lancer en local
 ```

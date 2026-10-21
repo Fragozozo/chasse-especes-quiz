@@ -1,0 +1,507 @@
+{
+ "renard": [
+  {
+   "fichierLocal": "renard-1.jpg",
+   "role": "",
+   "fichier": "Footprint_of_Vulpes_vulpes.jpg",
+   "auteur": "K.Khedrup",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Footprint_of_Vulpes_vulpes.jpg"
+  },
+  {
+   "fichierLocal": "renard-2.jpg",
+   "role": "",
+   "fichier": "Trittsiegel_Fuchs_1.jpg",
+   "auteur": "Sciencia58",
+   "licence": "CC0",
+   "licenceUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source": "https://commons.wikimedia.org/wiki/File:Trittsiegel_Fuchs_1.jpg"
+  }
+ ],
+ "sanglier": [
+  {
+   "fichierLocal": "sanglier-1.jpg",
+   "role": "",
+   "fichier": "Sus.scrofa.tracks.on.snow.jpg",
+   "auteur": "James Lindsey",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Sus.scrofa.tracks.on.snow.jpg"
+  },
+  {
+   "fichierLocal": "sanglier-2.jpg",
+   "role": "",
+   "fichier": "Sus.scrofa.tracks.jpg",
+   "auteur": "James Lindsey",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Sus.scrofa.tracks.jpg"
+  }
+ ],
+ "cerf": [
+  {
+   "fichierLocal": "cerf-1.jpg",
+   "role": "",
+   "fichier": "Trace_de_Cerf_élaphe_(Cervus_elaphus)_en_forêt_de_Mormal.jpg",
+   "auteur": "JustineLevray",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Trace_de_Cerf_%C3%A9laphe_%28Cervus_elaphus%29_en_for%C3%AAt_de_Mormal.jpg"
+  }
+ ],
+ "chevreuil": [
+  {
+   "fichierLocal": "chevreuil-1.jpg",
+   "role": "",
+   "fichier": "Capreolus.capreolus.tracks.jpg",
+   "auteur": "James Lindsey",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Capreolus.capreolus.tracks.jpg"
+  },
+  {
+   "fichierLocal": "chevreuil-2.jpg",
+   "role": "",
+   "fichier": "Rådyrspor.jpg",
+   "auteur": "No machine-readable author provided. GunnerPoulsen~commonswiki assumed (based…",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "source": "https://commons.wikimedia.org/wiki/File:R%C3%A5dyrspor.jpg"
+  }
+ ],
+ "blaireau": [
+  {
+   "fichierLocal": "blaireau-1.jpg",
+   "role": "",
+   "fichier": "Meles-Meles_Tracks.jpg",
+   "auteur": "DooferKiin",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Meles-Meles_Tracks.jpg"
+  },
+  {
+   "fichierLocal": "blaireau-2.jpg",
+   "role": "",
+   "fichier": "Meles_meles.jpg",
+   "auteur": "Ivan Medenica",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Meles_meles.jpg"
+  }
+ ],
+ "raton-laveur": [
+  {
+   "fichierLocal": "raton-laveur-1.jpg",
+   "role": "",
+   "fichier": "Raccoon_track_foot_print_in_mud.jpg",
+   "auteur": "Jeepday",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Raccoon_track_foot_print_in_mud.jpg"
+  },
+  {
+   "fichierLocal": "raton-laveur-2.jpg",
+   "role": "",
+   "fichier": "Procyon_lotor_tracks_with_scale.jpg",
+   "auteur": "Alex Abair",
+   "licence": "CC BY 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Procyon_lotor_tracks_with_scale.jpg"
+  }
+ ],
+ "chien-viverrin": [
+  {
+   "fichierLocal": "chien-viverrin-1.jpg",
+   "role": "",
+   "fichier": "Nyctereutes_procyonoides_footprints.JPG",
+   "auteur": "Vladimir Yu. Arkhipov, Arkhivov",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Nyctereutes_procyonoides_footprints.JPG"
+  }
+ ],
+ "loup": [
+  {
+   "fichierLocal": "loup-1.jpg",
+   "role": "",
+   "fichier": "Canis_lupus_footprints.jpg",
+   "auteur": "Juan Lacruz",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Canis_lupus_footprints.jpg"
+  },
+  {
+   "fichierLocal": "loup-2.jpg",
+   "role": "",
+   "fichier": "Canis_lupus_tracks.jpg",
+   "auteur": "Unknown (Fish & Wildlife Service employee)",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "source": "https://commons.wikimedia.org/wiki/File:Canis_lupus_tracks.jpg"
+  }
+ ],
+ "lynx": [
+  {
+   "fichierLocal": "lynx-1.jpg",
+   "role": "",
+   "fichier": "Luchs-Faehrte_im_Schnee.jpg",
+   "auteur": "Thomas Westphal at German Wikipedia",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "source": "https://commons.wikimedia.org/wiki/File:Luchs-Faehrte_im_Schnee.jpg"
+  },
+  {
+   "fichierLocal": "lynx-2.jpg",
+   "role": "",
+   "fichier": "Trittsiegel_auf_Feldweg_1.jpg",
+   "auteur": "Sciencia58",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Trittsiegel_auf_Feldweg_1.jpg"
+  }
+ ],
+ "ours": [
+  {
+   "fichierLocal": "ours-1.jpg",
+   "role": "",
+   "fichier": "Brown_bear_footprint.jpg",
+   "auteur": "kallerna",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "source": "https://commons.wikimedia.org/wiki/File:Brown_bear_footprint.jpg"
+  },
+  {
+   "fichierLocal": "ours-2.jpg",
+   "role": "",
+   "fichier": "Grizzly_track_on_ground.jpg",
+   "auteur": "Hillebrand Steve, U.S. Fish and Wildlife Service",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "source": "https://commons.wikimedia.org/wiki/File:Grizzly_track_on_ground.jpg"
+  }
+ ],
+ "loutre": [
+  {
+   "fichierLocal": "loutre-1.jpg",
+   "role": "",
+   "fichier": "Fischotter-trittsiegel-1.jpg",
+   "auteur": "Kiki63",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Fischotter-trittsiegel-1.jpg"
+  },
+  {
+   "fichierLocal": "loutre-2.jpg",
+   "role": "",
+   "fichier": "Otter_Tracks_in_Glenshalloch_Wood_-_geograph.org.uk_-_4964295.jpg",
+   "auteur": "Mary and Angus Hogg",
+   "licence": "CC BY-SA 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Otter_Tracks_in_Glenshalloch_Wood_-_geograph.org.uk_-_4964295.jpg"
+  }
+ ],
+ "lapin": [
+  {
+   "fichierLocal": "lapin-1.jpg",
+   "role": "",
+   "fichier": "Empreintes_de_lapin_dans_la_neige.JPG",
+   "auteur": "Thesupermat",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Empreintes_de_lapin_dans_la_neige.JPG"
+  },
+  {
+   "fichierLocal": "lapin-2.jpg",
+   "role": "",
+   "fichier": "Oryctolagus.cuniculus.tracks.on.snow.jpg",
+   "auteur": "James Lindsey",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Oryctolagus.cuniculus.tracks.on.snow.jpg"
+  }
+ ],
+ "lievre": [
+  {
+   "fichierLocal": "lievre-1.jpg",
+   "role": "",
+   "fichier": "Hasenspuren_1.JPG",
+   "auteur": "Böhringer Friedrich",
+   "licence": "CC BY-SA 2.5",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+   "source": "https://commons.wikimedia.org/wiki/File:Hasenspuren_1.JPG"
+  },
+  {
+   "fichierLocal": "lievre-2.jpg",
+   "role": "",
+   "fichier": "Hasenspuren_2.JPG",
+   "auteur": "Böhringer Friedrich",
+   "licence": "CC BY-SA 2.5",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+   "source": "https://commons.wikimedia.org/wiki/File:Hasenspuren_2.JPG"
+  }
+ ],
+ "lievre-variable": [
+  {
+   "fichierLocal": "lievre-variable-1.jpg",
+   "role": "",
+   "fichier": "Lepus_timidus_tracks.jpg",
+   "auteur": "MurielBendel",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Lepus_timidus_tracks.jpg"
+  }
+ ],
+ "ragondin": [
+  {
+   "fichierLocal": "ragondin-1.jpg",
+   "role": "",
+   "fichier": "Empreinte_de_ragondin.jpg",
+   "auteur": "Burzawa clément PIM'S",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Empreinte_de_ragondin.jpg"
+  }
+ ],
+ "rat-musque": [
+  {
+   "fichierLocal": "rat-musque-1.jpg",
+   "role": "",
+   "fichier": "Muskrat_Track_on_Seedskadee_NWR_(22390461655).jpg",
+   "auteur": "USFWS Mountain-Prairie",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "source": "https://commons.wikimedia.org/wiki/File:Muskrat_Track_on_Seedskadee_NWR_%2822390461655%29.jpg"
+  }
+ ],
+ "castor": [
+  {
+   "fichierLocal": "castor-1.jpg",
+   "role": "",
+   "fichier": "Beaver_Castor_fiber_tracks_in_snow.jpg",
+   "auteur": "Dariusz Kowalczyk",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Beaver_Castor_fiber_tracks_in_snow.jpg"
+  }
+ ],
+ "ecureuil": [
+  {
+   "fichierLocal": "ecureuil-1.jpg",
+   "role": "",
+   "fichier": "Red_Squirrel_Tracks_(8406804611).jpg",
+   "auteur": "Peter Trimming from Croydon, England",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Red_Squirrel_Tracks_%288406804611%29.jpg"
+  },
+  {
+   "fichierLocal": "ecureuil-2.jpg",
+   "role": "",
+   "fichier": "Red_squirrel_footprint.JPG",
+   "auteur": "Udo Schröter",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Red_squirrel_footprint.JPG"
+  }
+ ],
+ "herisson": [
+  {
+   "fichierLocal": "herisson-1.jpg",
+   "role": "",
+   "fichier": "Erinaceus.europaeus.tracks.jpg",
+   "auteur": "James Lindsey",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Erinaceus.europaeus.tracks.jpg"
+  }
+ ],
+ "biset": [
+  {
+   "fichierLocal": "biset-1.jpg",
+   "role": "",
+   "fichier": "Columba_livia_tracks.jpg",
+   "auteur": "Jomegat",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Columba_livia_tracks.jpg"
+  }
+ ],
+ "faisan": [
+  {
+   "fichierLocal": "faisan-1.jpg",
+   "role": "",
+   "fichier": "Pheasant_tracks_-_geograph.org.uk_-_1058324.jpg",
+   "auteur": "Walter Baxter",
+   "licence": "CC BY-SA 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Pheasant_tracks_-_geograph.org.uk_-_1058324.jpg"
+  },
+  {
+   "fichierLocal": "faisan-2.jpg",
+   "role": "",
+   "fichier": "Frosty_Pheasant_Track_(50724039441).jpg",
+   "auteur": "USFWS Mountain Prairie",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "source": "https://commons.wikimedia.org/wiki/File:Frosty_Pheasant_Track_%2850724039441%29.jpg"
+  }
+ ],
+ "grand-tetras": [
+  {
+   "fichierLocal": "grand-tetras-1.jpg",
+   "role": "",
+   "fichier": "Foot_print_of_Tetrao_urogallus_in_Kladské_rašeliny.jpg",
+   "auteur": "Chmee2",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Foot_print_of_Tetrao_urogallus_in_Kladsk%C3%A9_ra%C5%A1eliny.jpg"
+  }
+ ],
+ "perdrix-grise": [
+  {
+   "fichierLocal": "perdrix-grise-1.jpg",
+   "role": "",
+   "fichier": "Следы_серой_куропатки.JPG",
+   "auteur": "Ufo Snake",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:%D0%A1%D0%BB%D0%B5%D0%B4%D1%8B_%D1%81%D0%B5%D1%80%D0%BE%D0%B9_%D0%BA%D1%83%D1%80%D0%BE%D0%BF%D0%B0%D1%82%D0%BA%D0%B8.JPG"
+  }
+ ],
+ "pie": [
+  {
+   "fichierLocal": "pie-1.jpg",
+   "role": "",
+   "fichier": "Pica_pica_footprints_H2934_Harakanvarpaat_lumessa_C.jpg",
+   "auteur": "Anneli Salo",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Pica_pica_footprints_H2934_Harakanvarpaat_lumessa_C.jpg"
+  }
+ ],
+ "grand-corbeau": [
+  {
+   "fichierLocal": "grand-corbeau-1.jpg",
+   "role": "",
+   "fichier": "Raven's_Canvas_(5701959122).jpg",
+   "auteur": "Mike Beauregard from Nunavut, Canada",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Raven%27s_Canvas_%285701959122%29.jpg"
+  }
+ ],
+ "colvert": [
+  {
+   "fichierLocal": "colvert-1.jpg",
+   "role": "",
+   "fichier": "Anas_platyrhynchos_track_03.jpg",
+   "auteur": "Stolbovsky",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Anas_platyrhynchos_track_03.jpg"
+  },
+  {
+   "fichierLocal": "colvert-2.jpg",
+   "role": "",
+   "fichier": "Mallard_trail_(Whitefish_Channel).JPG",
+   "auteur": "Fungus Guy",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Mallard_trail_%28Whitefish_Channel%29.JPG"
+  }
+ ],
+ "bernache-canada": [
+  {
+   "fichierLocal": "bernache-canada-1.jpg",
+   "role": "",
+   "fichier": "Canada_goose_tracks_(Bell's_Point).jpg",
+   "auteur": "Fungus Guy",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Canada_goose_tracks_%28Bell%27s_Point%29.jpg"
+  },
+  {
+   "fichierLocal": "bernache-canada-2.jpg",
+   "role": "",
+   "fichier": "Branta_canadensis_track.jpg",
+   "auteur": "Jomegat",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Branta_canadensis_track.jpg"
+  }
+ ],
+ "poule-eau": [
+  {
+   "fichierLocal": "poule-eau-1.jpg",
+   "role": "",
+   "fichier": "20171209Gallinula_chloropus1.jpg",
+   "auteur": "AnRo0002",
+   "licence": "CC0",
+   "licenceUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source": "https://commons.wikimedia.org/wiki/File:20171209Gallinula_chloropus1.jpg"
+  }
+ ],
+ "becassine-sourde": [
+  {
+   "fichierLocal": "becassine-sourde-1.jpg",
+   "role": "",
+   "fichier": "Lymnocryptes_minimus_tracks_CB001.jpg",
+   "auteur": "Donkey shot",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Lymnocryptes_minimus_tracks_CB001.jpg"
+  }
+ ],
+ "barge-queue-noire": [
+  {
+   "fichierLocal": "barge-queue-noire-1.jpg",
+   "role": "",
+   "fichier": "Limosa_limosa_tracks.jpg",
+   "auteur": "Аимаина хикари",
+   "licence": "CC0",
+   "licenceUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source": "https://commons.wikimedia.org/wiki/File:Limosa_limosa_tracks.jpg"
+  }
+ ],
+ "heron": [
+  {
+   "fichierLocal": "heron-1.jpg",
+   "role": "",
+   "fichier": "Trittsiegel-Graureiher_Mike_Krüger_191105.jpg",
+   "auteur": "Mike Krüger",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Trittsiegel-Graureiher_Mike_Kr%C3%BCger_191105.jpg"
+  },
+  {
+   "fichierLocal": "heron-2.jpg",
+   "role": "",
+   "fichier": "HuellaGarza.jpg",
+   "auteur": "Juan lacruz",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:HuellaGarza.jpg"
+  }
+ ],
+ "cigogne": [
+  {
+   "fichierLocal": "cigogne-1.jpg",
+   "role": "",
+   "fichier": "Ciconia_ciconia_footprint,_crop.jpg",
+   "auteur": "Stse",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Ciconia_ciconia_footprint%2C_crop.jpg"
+  },
+  {
+   "fichierLocal": "cigogne-2.jpg",
+   "role": "",
+   "fichier": "Ciconia_ciconia_footprint.jpg",
+   "auteur": "Stse",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Ciconia_ciconia_footprint.jpg"
+  }
+ ]
+}

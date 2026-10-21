@@ -1,0 +1,115 @@
+{
+ "renard": [
+  "03",
+  "07"
+ ],
+ "sanglier": [
+  "04",
+  "03"
+ ],
+ "cerf": [
+  "04"
+ ],
+ "chevreuil": [
+  "02",
+  "04"
+ ],
+ "blaireau": [
+  "04",
+  "13"
+ ],
+ "raton-laveur": [
+  "01",
+  "02"
+ ],
+ "chien-viverrin": [
+  "01"
+ ],
+ "loup": [
+  "10",
+  "05"
+ ],
+ "lynx": [
+  "02",
+  "01"
+ ],
+ "ours": [
+  "09",
+  "01"
+ ],
+ "loutre": [
+  "08",
+  "05"
+ ],
+ "lapin": [
+  "03",
+  "01"
+ ],
+ "lievre": [
+  "03",
+  "02"
+ ],
+ "lievre-variable": [
+  "01"
+ ],
+ "ragondin": [
+  "02"
+ ],
+ "rat-musque": [
+  "02"
+ ],
+ "castor": [
+  "01"
+ ],
+ "ecureuil": [
+  "03",
+  "05"
+ ],
+ "herisson": [
+  "01"
+ ],
+ "biset": [
+  "01"
+ ],
+ "faisan": [
+  "03",
+  "04"
+ ],
+ "grand-tetras": [
+  "02"
+ ],
+ "perdrix-grise": [
+  "01"
+ ],
+ "pie": [
+  "02"
+ ],
+ "grand-corbeau": [
+  "01"
+ ],
+ "colvert": [
+  "03",
+  "04"
+ ],
+ "bernache-canada": [
+  "03",
+  "01"
+ ],
+ "poule-eau": [
+  "01"
+ ],
+ "becassine-sourde": [
+  "01"
+ ],
+ "barge-queue-noire": [
+  "01"
+ ],
+ "heron": [
+  "03",
+  "01"
+ ],
+ "cigogne": [
+  "02",
+  "01"
+ ]
+}

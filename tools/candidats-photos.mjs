@@ -4,10 +4,14 @@
 // Usage : node tools/candidats-photos.mjs <dossier de travail> [id d'espèce…]
 //         node tools/candidats-photos.mjs <dossier de travail> --ajout <id> "<recherche Commons>" [nombre]
 //         (ajoute des candidates à une espèce, par exemple pour trouver des photos de jeunes)
+//         node tools/candidats-photos.mjs <dossier> --traces [id…]
+//         (photos d'empreintes : autre dossier de travail, recherches et filtre propres aux traces)
 import { writeFile, mkdir, readFile, access } from "node:fs/promises";
 import { join } from "node:path";
 import { ESPECES } from "../js/especes.js";
 
+const TRACES = process.argv.includes("--traces");
+if (TRACES) process.argv.splice(process.argv.indexOf("--traces"), 1);
 const DOSSIER = process.argv[2];
 if (!DOSSIER) throw new Error("Indiquer le dossier de travail");
 const AJOUT = process.argv[3] === "--ajout" ? { id: process.argv[4], q: process.argv[5], n: Number(process.argv[6] || 12) } : null;
@@ -70,7 +74,15 @@ async function infos(titres) {
   return res;
 }
 
+// Pour les empreintes : le fichier doit parler de traces, et on garde les photos de petite taille.
+const EST_TRACE = /(track|footprint|foot.?print|paw.?print|hoof.?print|spoor|empreinte|traces?\b|spur\b|spuren|trittsiegel|f[äa]hrte|trop|ślad|odcisk|pegada|huella|impronta|orma)/i;
+const HORS_SUJET_TRACES = /(map|range|distribution|skull|skeleton|drawing|dessin|illustration|painting|plate|lithograph|stamp|logo|sculpture|statue|fossil|dinosaur|ichnite|sign|panneau|tafel)/i;
+
 function convient(ph) {
+  if (TRACES) {
+    const t = `${ph.fichier} ${ph.description}`;
+    return ph.mime === "image/jpeg" && LIBRE.test(ph.licence) && EST_TRACE.test(t) && !HORS_SUJET_TRACES.test(t) && ph.largeur >= 500;
+  }
   if (ph.mime !== "image/jpeg") return false;
   if (!LIBRE.test(ph.licence)) return false;
   if (HORS_SUJET.test(ph.fichier) || HORS_SUJET.test(ph.description)) return false;
@@ -129,12 +141,16 @@ for (const e of ESPECES) {
 
   const noms = e.latinPhotos || [e.latin];
   const requetes = [];
-  for (const l of noms) requetes.push([`"${l}" incategory:"Quality images"`, 25]);
-  if (!ressemblent(e)) {
-    requetes.push([`"${noms[0]}" male`, 8], [`"${noms[0]}" female`, 8]);
+  if (TRACES) {
+    for (const l of noms) requetes.push([`"${l}" track`, 10], [`"${l}" footprint`, 10], [`"${l}" Trittsiegel`, 6], [`"${l}" Spur`, 6], [`"${l}" empreinte`, 6]);
+  } else {
+    for (const l of noms) requetes.push([`"${l}" incategory:"Quality images"`, 25]);
+    if (!ressemblent(e)) {
+      requetes.push([`"${noms[0]}" male`, 8], [`"${noms[0]}" female`, 8]);
+    }
+    requetes.push([`"${noms[0]}" juvenile`, 5]);
+    for (const l of noms) requetes.push([`"${l}"`, 20]);
   }
-  requetes.push([`"${noms[0]}" juvenile`, 5]);
-  for (const l of noms) requetes.push([`"${l}"`, 20]);
 
   const titres = [];
   try {
