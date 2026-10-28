@@ -402,3 +402,9 @@ html, body { overflow-x: hidden; }
 
 /* Photos d'empreintes dans les fiches */
 .rubrique .credit { margin-top: -4px; }
+
+/* Épreuve théorique */
+.eliminatoire, .theme-question { font-size: 0.78rem; text-transform: uppercase; letter-spacing: .09em; font-weight: 700; margin-bottom: -12px; }
+.eliminatoire { color: var(--ko); }
+.theme-question { color: var(--encre-douce); }
+.modes .chips { margin-top: 0; }

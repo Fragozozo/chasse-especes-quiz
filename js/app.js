@@ -1,5 +1,6 @@
-import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES, SAVOIRS } from "./especes.js?v=3";
-import { TRACES } from "./traces.js?v=3";
+import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=5";
+import { chargerQuestions } from "./questions.js?v=5";
+import { TRACES } from "./traces.js?v=5";
 
 // ---------- Utilitaires ----------
 const $ = (sel, el = document) => el.querySelector(sel);
@@ -70,7 +71,7 @@ let photos = {};
 let photosTraces = {};
 async function chargerCredits(fichier, dossier) {
   try {
-    const r = await fetch(`${fichier}?v=3`);
+    const r = await fetch(`${fichier}?v=5`);
     if (!r.ok) return {};
     const d = await r.json();
     for (const liste of Object.values(d)) for (const p of liste) p.src = dossier + p.fichierLocal;
@@ -86,7 +87,7 @@ const aPhoto = (e) => toutesPhotos(e.id).length > 0;
 const tirerPhoto = (id, role) => tirer(toutesPhotos(id).filter((p) => !role || p.role === role), 1)[0] || null;
 
 // ---------- État ----------
-const etat = { vue: "accueil", theme: "tous", quiz: null, fiche: null, filtreFiches: "tous", recherche: "" };
+const etat = { vue: "accueil", theme: "tous", themeQ: "tous", quiz: null, fiche: null, filtreFiches: "tous", recherche: "" };
 
 // ---------- Génération des questions ----------
 function qPhotoEspece(e) {
@@ -212,10 +213,12 @@ function qReproduction(e) {
   };
 }
 
-function qSavoir(i) {
-  const s = SAVOIRS[i];
+// Questions de l'épreuve théorique, lues dans questions/*.md (voir questions.js).
+let QUESTIONS = [];
+let THEMES_Q = {};
+function qSavoir(s) {
   return {
-    type: "savoir", index: i,
+    type: "savoir", id: s.id, theme: s.t, eliminatoire: !!s.e,
     titre: s.q,
     choix: melanger(s.r.map((label, k) => ({ cle: String(k), label }))),
     bonne: "0",
@@ -241,14 +244,28 @@ function choisir(liste, n) {
   return res;
 }
 
-function savoirsTries(n) {
-  const idx = SAVOIRS.map((_, i) => i).sort((a, b) => {
-    const sa = stats.savoirs[a], sb = stats.savoirs[b];
-    const pa = !sa ? 1 : sa.dernier ? 2 : 0;
-    const pb = !sb ? 1 : sb.dernier ? 2 : 0;
-    return pa - pb || Math.random() - 0.5;
-  });
-  return idx.slice(0, n).map(qSavoir);
+// Tire n questions en privilégiant les ratées, puis les jamais vues.
+function savoirsTries(n, filtre = () => true) {
+  const priorite = (q) => {
+    const st = stats.savoirs[q.id];
+    return !st ? 1 : st.dernier ? 2 : 0;
+  };
+  return melanger(QUESTIONS.filter(filtre)).sort((a, b) => priorite(a) - priorite(b)).slice(0, n).map(qSavoir);
+}
+
+// Examen blanc au format officiel : 10 questions sur les 4 thèmes, dont une question de sécurité éliminatoire.
+function examenOfficiel() {
+  const avecPhoto = ESPECES.filter(aPhoto);
+  const elim = savoirsTries(1, (q) => q.e);
+  elim.forEach((q) => { q.elimExamen = true; });
+  const pris = new Set(elim.map((q) => q.id));
+  const de = (theme, n) => {
+    const l = savoirsTries(n, (q) => q.t === theme && !pris.has(q.id));
+    l.forEach((q) => pris.add(q.id));
+    return l;
+  };
+  return melanger([qPhotoEspece(choisir(avecPhoto, 1)[0]), qStatut(choisir(avecPhoto, 1)[0]), ...de("faune", 1),
+    ...de("chasse", 2), ...de("reglementation", 2), ...de("armes", 2), ...elim]);
 }
 
 const MODES = {
@@ -257,8 +274,9 @@ const MODES = {
   sexe: { nom: "Mâle, femelle ou jeune ?", desc: "Distingue le brocard de la chevrette, le coq de la poule, le marcassin…" },
   traces: { nom: "Empreintes", desc: "Associe chaque empreinte à l'animal qui la laisse." },
   biologie: { nom: "Reproduction et vocabulaire", desc: "Rut, gestation, noms des mâles, femelles et jeunes." },
-  savoirs: { nom: "Questions de connaissances", desc: `${SAVOIRS.length} questions sur la biologie, l'identification et les statuts.` },
-  examen: { nom: "Examen blanc", desc: "20 questions mélangées sur toutes les espèces." },
+  examen: { nom: "Révision des espèces", desc: "20 questions mélangées sur toutes les espèces." },
+  theorie: { nom: "Épreuve théorique", desc: "" },
+  officiel: { nom: "Examen blanc", desc: "10 questions au format de l'examen, dont une question de sécurité éliminatoire." },
   erreurs: { nom: "Revoir mes erreurs", desc: "" },
 };
 
@@ -281,8 +299,10 @@ function construireQuiz(mode) {
     const voc = base.filter(aVocabulaire);
     const rep = base.filter((e) => !estOiseau(e));
     questions = melanger([...choisir(voc, 6).map(qVocabulaire), ...choisir(rep, 4).map(qReproduction)]);
-  } else if (mode === "savoirs") {
-    questions = savoirsTries(10);
+  } else if (mode === "theorie") {
+    questions = savoirsTries(10, (q) => etat.themeQ === "tous" || q.t === etat.themeQ);
+  } else if (mode === "officiel") {
+    questions = examenOfficiel();
   } else if (mode === "erreurs") {
     const ratees = ESPECES.filter((e) => stats.especes[e.id] && !stats.especes[e.id].dernier && aPhoto(e));
     questions = melanger(ratees).slice(0, 10).map((e) => (Math.random() < 0.5 ? qPhotoEspece(e) : qStatut(e)));
@@ -295,7 +315,6 @@ function construireQuiz(mode) {
       ...choisir(ESPECES.filter((e) => e.trace), 2).map(qTrace),
       ...choisir(ESPECES.filter(aVocabulaire), 1).map(qVocabulaire),
       ...choisir(ESPECES.filter((e) => !estOiseau(e)), 1).map(qReproduction),
-      ...savoirsTries(2),
     ]);
   }
   return { mode, questions, i: 0, score: 0, reponse: null };
@@ -343,20 +362,28 @@ function rendreAccueil() {
       <p><strong>${nbM}</strong> espèce${nbM > 1 ? "s" : ""} maîtrisée${nbM > 1 ? "s" : ""} sur ${ESPECES.length}${derniere ? ` · dernier quiz : ${derniere.score}/${derniere.total}` : ""}</p>
     </section>
 
+    <section class="modes" aria-labelledby="t-theorie">
+      <h2 id="t-theorie" class="etiquette">Épreuve théorique · ${QUESTIONS.length} questions</h2>
+      ${mode("officiel", "mode-principal")}
+      <div class="chips" role="group">
+        ${[["tous", `Toutes (${QUESTIONS.length})`], ...Object.entries(THEMES_Q).map(([k, n]) => [k, `${n} (${QUESTIONS.filter((q) => q.t === k).length})`])]
+          .map(([k, n]) => `<button type="button" class="chip" data-theorie="${h(k)}">${h(n)}</button>`).join("")}
+      </div>
+    </section>
+
     <section aria-labelledby="t-theme">
-      <h2 id="t-theme" class="etiquette">Thème travaillé</h2>
+      <h2 id="t-theme" class="etiquette">Reconnaissance des espèces · thème travaillé</h2>
       <div class="chips" role="group">
         ${Object.entries(THEMES).map(([k, t]) => `<button type="button" class="chip" data-theme="${k}" aria-pressed="${etat.theme === k}">${h(t.nom)}</button>`).join("")}
       </div>
     </section>
 
     <section class="modes" aria-label="Entraînements">
-      ${mode("photos", "mode-principal")}
+      ${mode("photos")}
       ${mode("statut")}
       ${mode("sexe")}
       ${mode("traces")}
       ${mode("biologie")}
-      ${mode("savoirs")}
       ${mode("examen")}
       ${nbErreurs ? `<button type="button" class="mode mode-erreurs" data-mode="erreurs">
         <span class="mode-nom">Revoir mes erreurs</span>
@@ -368,10 +395,15 @@ function rendreAccueil() {
     b.addEventListener("click", () => { etat.theme = b.dataset.theme; rendreAccueil(); }));
   app().querySelectorAll("[data-mode]").forEach((b) =>
     b.addEventListener("click", () => demarrer(b.dataset.mode)));
+  app().querySelectorAll("[data-theorie]").forEach((b) =>
+    b.addEventListener("click", () => { etat.themeQ = b.dataset.theorie; demarrer("theorie"); }));
 }
 
+// Nom affiché en haut du quiz et sur l'écran de score.
+const titreQuiz = (z) => z.mode === "theorie" ? (THEMES_Q[z.themeQ] || "Toutes les questions") : MODES[z.mode].nom;
+
 function demarrer(mode) {
-  etat.quiz = construireQuiz(mode);
+  etat.quiz = { ...construireQuiz(mode), themeQ: etat.themeQ };
   etat.vue = "quiz";
   rendre();
   window.scrollTo(0, 0);
@@ -426,11 +458,13 @@ function rendreQuiz() {
   app().innerHTML = `
     <div class="quiz-barre">
       <button type="button" class="lien" id="quitter">Quitter</button>
-      <span class="quiz-mode">${h(MODES[z.mode].nom)}</span>
+      <span class="quiz-mode">${h(titreQuiz(z))}</span>
       <span class="quiz-compteur">${z.i + 1}/${z.questions.length}</span>
     </div>
     <div class="quiz-avance"><div style="width:${(z.i / z.questions.length) * 100}%"></div></div>
     ${media}
+    ${q.elimExamen ? `<p class="eliminatoire">Question éliminatoire</p>` : ""}
+    ${q.type === "savoir" && THEMES_Q[q.theme] ? `<p class="theme-question">${h(THEMES_Q[q.theme])}</p>` : ""}
     ${q.sousTitre ? `<p class="question-espece">${h(q.sousTitre)}</p>` : ""}
     <h2 class="question">${h(q.titre)}</h2>
     <div class="liste-choix">${choix}</div>
@@ -459,8 +493,9 @@ function repondre(cle) {
   z.reponse = cle;
   const ok = estJuste(q, cle);
   if (ok) z.score++;
-  if (q.type === "savoir") noter("savoirs", q.index, ok);
+  if (q.type === "savoir") noter("savoirs", q.id, ok);
   else noter("especes", q.espece.id, ok);
+  if (q.elimExamen && !ok) z.elimine = true;
   if (navigator.vibrate) try { navigator.vibrate(ok ? 15 : [30, 40, 30]); } catch {}
   rendreQuiz();
 }
@@ -484,10 +519,10 @@ function suivante() {
 function rendreScore() {
   const z = etat.quiz;
   const pct = Math.round((z.score / z.questions.length) * 100);
-  const message = pct >= 90 ? "Excellent, tu connais ton sujet." : pct >= 70 ? "Bon résultat, encore un effort." : pct >= 50 ? "C'est un début. Relis les fiches du thème." : "Il faut réviser : commence par les fiches.";
+  const message = z.elimine ? "Éliminé : la question de sécurité est ratée. À l'examen, cette erreur suffit à échouer." : pct >= 90 ? "Excellent, tu connais ton sujet." : pct >= 70 ? "Bon résultat, encore un effort." : pct >= 50 ? "C'est un début. Relis les fiches du thème." : "Il faut réviser : commence par les fiches.";
   app().innerHTML = `
     <section class="score">
-      <p class="surtitre">${h(MODES[z.mode].nom)}</p>
+      <p class="surtitre">${h(titreQuiz(z))}</p>
       <p class="score-chiffre"><span>${z.score}</span>/${z.questions.length}</p>
       <p>${message}</p>
       <div class="actions">
@@ -495,7 +530,7 @@ function rendreScore() {
         <button type="button" class="bouton secondaire" id="accueil">Accueil</button>
       </div>
     </section>`;
-  $("#rejouer").onclick = () => demarrer(z.mode);
+  $("#rejouer").onclick = () => { etat.themeQ = z.themeQ; demarrer(z.mode); };
   $("#accueil").onclick = () => aller("accueil");
 }
 
@@ -695,6 +730,11 @@ function rendreInfos() {
     </section>
 
     <section class="bloc">
+      <h2>Ajouter des questions</h2>
+      <p class="petit">Les questions de l'épreuve théorique sont dans le dossier <code>questions/</code> du dépôt GitHub, un fichier Markdown par thème. Pour en ajouter, modifie un fichier ou déposes-en un nouveau : l'application le charge à la prochaine ouverture avec du réseau. Le format est expliqué dans <code>questions/LISEZMOI.md</code>.</p>
+    </section>
+
+    <section class="bloc">
       <h2>Ma progression</h2>
       <p>${stats.sessions.length} quiz terminés.</p>
       <button type="button" class="bouton secondaire" id="reinit">Effacer ma progression</button>
@@ -744,10 +784,12 @@ function rendre() {
 // ---------- Démarrage ----------
 document.querySelectorAll(".onglet").forEach((b) => b.addEventListener("click", () => aller(b.dataset.vue)));
 rendre();
-Promise.all([chargerPhotos(), chargerTraces()]).then(([p, t]) => {
+Promise.all([chargerPhotos(), chargerTraces(), chargerQuestions()]).then(([p, t, q]) => {
   photos = p;
   photosTraces = t;
-  if (["fiches", "fiche", "infos"].includes(etat.vue)) rendre();
+  QUESTIONS = q.questions;
+  THEMES_Q = q.themes;
+  if (["accueil", "fiches", "fiche", "infos"].includes(etat.vue)) rendre();
 });
 
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
