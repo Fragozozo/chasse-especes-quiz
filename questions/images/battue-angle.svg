@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="800" height="500">
+<rect width="400" height="250" fill="#9cc27a"/>
+
+    <rect x="0" y="0" width="400" height="110" fill="#3f6e35"/>
+    <path d="M200 150 L-146.4 350.0 L-146.4 -50.0 Z" fill="#d22" opacity=".22"/><path d="M200 150 L546.4 -50.0 L546.4 350.0 Z" fill="#d22" opacity=".22"/>
+    <path d="M0 150 H400" stroke="#fff" stroke-width="1.5" stroke-dasharray="4 6"/>
+    <circle cx="70" cy="150" r="9" fill="#ff7a1a" stroke="#fff" stroke-width="2"/><text x="70" y="174" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#222" text-anchor="middle">voisin</text><circle cx="200" cy="150" r="9" fill="#ff7a1a" stroke="#fff" stroke-width="2"/><text x="200" y="174" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#222" text-anchor="middle">vous</text><circle cx="330" cy="150" r="9" fill="#ff7a1a" stroke="#fff" stroke-width="2"/><text x="330" y="174" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#222" text-anchor="middle">voisin</text>
+    <g transform="translate(110 160) rotate(90)" fill="#3b2e25">
+  <ellipse cx="0" cy="0" rx="16" ry="8"/><path d="M14 -4 L24 0 L14 4 Z"/></g><path d="M110 105 L110 200" stroke="#222" stroke-width="2" stroke-dasharray="5 4"/><path d="M110 200 L113.9 191.9 L106.1 191.9 Z" fill="#222"/>
+    <text x="200" y="30" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Traque</text>
+</svg>

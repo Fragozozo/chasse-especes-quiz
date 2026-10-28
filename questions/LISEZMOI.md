@@ -34,6 +34,9 @@ de son titre `# …`.
 - Chaque question commence par `## ` suivi de la question.
 - Exactement **4 réponses**, dont **une seule** cochée `[x]`. L'ordre n'a pas d'importance : l'app mélange
   les réponses. Une question qui ne respecte pas cette règle est ignorée.
+- Pour illustrer une question, ajoutez sous la question une ligne `![description](images/mon-image.jpg)` et
+  déposez l'image dans `questions/images/` (JPEG, PNG ou SVG ; largeur conseillée 800 px). La description
+  sert aux lecteurs d'écran.
 - Ajoutez ` [éliminatoire]` à la fin de la question pour une question de sécurité éliminatoire
   (elle peut tomber comme question éliminatoire de l'examen blanc).
 - Pour vérifier vos fichiers avant de les pousser : `node tools/verifier-questions.mjs`.

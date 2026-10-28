@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="800" height="500">
+<rect width="400" height="250" fill="#cfe4f2"/>
+
+    <path d="M0 250 L0 170 C60 160 120 120 200 100 C260 88 320 120 400 150 L400 250 Z" fill="#9cc27a"/>
+    <g transform="translate(205 100) scale(1 1)" fill="#3b2e25">
+  <path d="M-30 -10 C-32 -26 -18 -36 0 -36 C14 -36 22 -30 28 -22 L40 -14 L38 -8 L26 -8 C24 -4 20 -2 16 -2 L-24 -2 C-28 -4 -30 -6 -30 -10 Z"/>
+  <rect x="-24" y="-4" width="5" height="10"/><rect x="-12" y="-4" width="5" height="10"/><rect x="8" y="-4" width="5" height="10"/><rect x="18" y="-4" width="5" height="10"/>
+  <path d="M-30 -14 L-36 -8" stroke="#3b2e25" stroke-width="3"/><path d="M20 -30 L18 -38 L24 -32 Z"/></g>
+    <g transform="translate(60 205) scale(1.1 1.1)">
+  <rect x="-5" y="-22" width="4" height="22" fill="#3a3a3a"/><rect x="1" y="-22" width="4" height="22" fill="#3a3a3a"/>
+  <rect x="-7" y="-46" width="14" height="26" rx="3" fill="#ff7a1a"/><circle cx="0" cy="-53" r="6" fill="#e7b98f"/>
+  <path d="M-7 -59 h14 v-4 h-14 z" fill="#4a5a3a"/>
+  <path d="M2 -40 L26 -50" stroke="#222" stroke-width="2.5" stroke-linecap="round"/></g>
+    <g stroke="#d22" stroke-width="2.5" fill="none" stroke-dasharray="7 5">
+  <path d="M88 152 L340 40"/></g><circle cx="340" cy="40" r="4" fill="#d22"/>
+    <text x="350" y="30" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#d22" text-anchor="middle">?</text>
+</svg>

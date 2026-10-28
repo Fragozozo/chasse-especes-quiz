@@ -29,7 +29,7 @@ export function analyser(texte, fichier) {
     if (q.choix.length !== 4 || bonnes.length !== 1) {
       erreurs.push(`${fichier}, « ${q.q} » : il faut 4 réponses dont une seule cochée [x] (trouvé ${q.choix.length} réponses, ${bonnes.length} cochée).`);
     } else {
-      questions.push({ q: q.q, r: [bonnes[0].texte, ...q.choix.filter((c) => !c.ok).map((c) => c.texte)], ex: q.ex.join(" "), e: q.e });
+      questions.push({ q: q.q, r: [bonnes[0].texte, ...q.choix.filter((c) => !c.ok).map((c) => c.texte)], ex: q.ex.join(" "), e: q.e, image: q.image });
     }
     q = null;
   };
@@ -48,6 +48,9 @@ export function analyser(texte, fichier) {
       const e = /\[\s*[ée]liminatoire\s*\]\s*$/i.test(titre);
       titre = titre.replace(/\[\s*[ée]liminatoire\s*\]\s*$/i, "").trim();
       q = { q: titre, choix: [], ex: [], e };
+    } else if (q && (m = l.match(/^!\[([^\]]*)\]\(([^)\s]+)\)/))) {
+      // Image : chemin relatif au dossier questions/ (ex. images/sanglier-crete.svg) ou adresse complète.
+      q.image = { alt: m[1].trim(), src: /^https?:/.test(m[2]) ? m[2] : `questions/${m[2].replace(/^\.\//, "")}` };
     } else if (q && (m = l.match(/^[-*]\s*\[( |x|X)\]\s*(.+)$/))) {
       q.choix.push({ ok: m[1] !== " ", texte: m[2].trim() });
     } else if (q && (m = l.match(/^>\s?(.*)$/))) {

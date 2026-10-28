@@ -1,6 +1,6 @@
-import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=5";
-import { chargerQuestions } from "./questions.js?v=5";
-import { TRACES } from "./traces.js?v=5";
+import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=6";
+import { chargerQuestions } from "./questions.js?v=6";
+import { TRACES } from "./traces.js?v=6";
 
 // ---------- Utilitaires ----------
 const $ = (sel, el = document) => el.querySelector(sel);
@@ -71,7 +71,7 @@ let photos = {};
 let photosTraces = {};
 async function chargerCredits(fichier, dossier) {
   try {
-    const r = await fetch(`${fichier}?v=5`);
+    const r = await fetch(`${fichier}?v=6`);
     if (!r.ok) return {};
     const d = await r.json();
     for (const liste of Object.values(d)) for (const p of liste) p.src = dossier + p.fichierLocal;
@@ -218,7 +218,7 @@ let QUESTIONS = [];
 let THEMES_Q = {};
 function qSavoir(s) {
   return {
-    type: "savoir", id: s.id, theme: s.t, eliminatoire: !!s.e,
+    type: "savoir", id: s.id, theme: s.t, eliminatoire: !!s.e, image: s.image,
     titre: s.q,
     choix: melanger(s.r.map((label, k) => ({ cle: String(k), label }))),
     bonne: "0",
@@ -253,9 +253,31 @@ function savoirsTries(n, filtre = () => true) {
   return melanger(QUESTIONS.filter(filtre)).sort((a, b) => priorite(a) - priorite(b)).slice(0, n).map(qSavoir);
 }
 
+// Questions sur photo, comme à l'examen : espèce, statut, empreinte, mâle / femelle / jeune.
+function questionsPhoto(n) {
+  const avecPhoto = ESPECES.filter(aPhoto);
+  const fab = [
+    () => qPhotoEspece(choisir(avecPhoto, 1)[0]),
+    () => qStatut(choisir(avecPhoto, 1)[0]),
+    () => qTrace(choisir(ESPECES.filter((e) => photosTraces[e.id]?.length), 1)[0]),
+    () => qSexe(choisir(ESPECES.filter(aRoles), 1)[0]),
+  ];
+  return melanger(fab).slice(0, n).map((f) => f());
+}
+
+// Quiz d'un thème de l'épreuve théorique : 10 questions, dont une part illustrée.
+function quizTheorie(theme) {
+  const duTheme = (q) => theme === "tous" || q.t === theme;
+  if (theme === "faune") return melanger([...questionsPhoto(4), ...savoirsTries(6, duTheme)]);
+  // Armes et sécurité : 3 situations illustrées au moins quand il y en a.
+  const illustrees = savoirsTries(theme === "armes" ? 3 : theme === "tous" ? 2 : 0, (q) => duTheme(q) && q.image);
+  const pris = new Set(illustrees.map((q) => q.id));
+  const photos = theme === "tous" ? questionsPhoto(2) : [];
+  return melanger([...photos, ...illustrees, ...savoirsTries(10 - illustrees.length - photos.length, (q) => duTheme(q) && !pris.has(q.id))]);
+}
+
 // Examen blanc au format officiel : 10 questions sur les 4 thèmes, dont une question de sécurité éliminatoire.
 function examenOfficiel() {
-  const avecPhoto = ESPECES.filter(aPhoto);
   const elim = savoirsTries(1, (q) => q.e);
   elim.forEach((q) => { q.elimExamen = true; });
   const pris = new Set(elim.map((q) => q.id));
@@ -264,8 +286,10 @@ function examenOfficiel() {
     l.forEach((q) => pris.add(q.id));
     return l;
   };
-  return melanger([qPhotoEspece(choisir(avecPhoto, 1)[0]), qStatut(choisir(avecPhoto, 1)[0]), ...de("faune", 1),
-    ...de("chasse", 2), ...de("reglementation", 2), ...de("armes", 2), ...elim]);
+  // Faune : 3 questions sur photo. Armes : une situation illustrée et une autre question.
+  const situation = savoirsTries(1, (q) => q.t === "armes" && q.image && !pris.has(q.id));
+  situation.forEach((q) => pris.add(q.id));
+  return melanger([...questionsPhoto(3), ...de("chasse", 2), ...de("reglementation", 2), ...situation, ...de("armes", 2 - situation.length), ...elim]);
 }
 
 const MODES = {
@@ -276,7 +300,7 @@ const MODES = {
   biologie: { nom: "Reproduction et vocabulaire", desc: "Rut, gestation, noms des mâles, femelles et jeunes." },
   examen: { nom: "Révision des espèces", desc: "20 questions mélangées sur toutes les espèces." },
   theorie: { nom: "Épreuve théorique", desc: "" },
-  officiel: { nom: "Examen blanc", desc: "10 questions au format de l'examen, dont une question de sécurité éliminatoire." },
+  officiel: { nom: "Examen blanc", desc: "10 questions au format de l'examen, avec photos et situations de tir, dont une question de sécurité éliminatoire." },
   erreurs: { nom: "Revoir mes erreurs", desc: "" },
 };
 
@@ -300,7 +324,7 @@ function construireQuiz(mode) {
     const rep = base.filter((e) => !estOiseau(e));
     questions = melanger([...choisir(voc, 6).map(qVocabulaire), ...choisir(rep, 4).map(qReproduction)]);
   } else if (mode === "theorie") {
-    questions = savoirsTries(10, (q) => etat.themeQ === "tous" || q.t === etat.themeQ);
+    questions = quizTheorie(etat.themeQ);
   } else if (mode === "officiel") {
     questions = examenOfficiel();
   } else if (mode === "erreurs") {
@@ -443,6 +467,7 @@ function rendreQuiz() {
 
   let media = "";
   if (q.photo !== undefined) media = photoHtml(q.photo);
+  else if (q.image) media = `<figure class="photo illustration"><img src="${h(q.image.src)}" alt="${h(q.image.alt)}"></figure>`;
   else if (q.type === "trace") media = q.photoTrace ? photoHtml(q.photoTrace) : `<div class="trace-grande">${TRACES[q.espece.trace].dessin}</div>`;
 
   const choix = q.choix.map((c) => {

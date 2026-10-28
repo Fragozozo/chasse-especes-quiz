@@ -408,3 +408,4 @@ html, body { overflow-x: hidden; }
 .eliminatoire { color: var(--ko); }
 .theme-question { color: var(--encre-douce); }
 .modes .chips { margin-top: 0; }
+.illustration { background: #fff; }

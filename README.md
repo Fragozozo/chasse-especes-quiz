@@ -13,7 +13,7 @@ En ligne : https://fragozozo.github.io/chasse-especes-quiz/
   identification, mâle / femelle / jeune et leur nom, habitat, alimentation, reproduction, particularités,
   empreinte (photo pour 32 espèces, schéma simplifié sinon), risques de confusion.
 - 3 à 5 photos par espèce, en distinguant mâle, femelle et jeune quand c'est utile.
-- 176 questions de l'épreuve théorique sur les 4 thèmes de l'examen (faune et habitats, chasse,
+- 188 questions de l'épreuve théorique, dont 12 situations de tir illustrées (« Pouvez-vous tirer ? »), sur les 4 thèmes de l'examen (faune et habitats, chasse,
   lois et réglementation, armes et sécurité), avec 4 réponses, une explication, et un examen blanc
   au format officiel (10 questions dont une question de sécurité éliminatoire).
 - Entraînements, sur toutes les espèces ou par thème (groupe, ESOD, espèces protégées) : reconnaître
@@ -21,7 +21,9 @@ En ligne : https://fragozozo.github.io/chasse-especes-quiz/
   questions de connaissances, examen blanc de 20 questions, révision des erreurs.
 
 ## Questions de l'épreuve théorique
-Les questions sont dans des fichiers Markdown du dossier `questions/` (un par thème). Pour en ajouter,
+Les questions sont dans des fichiers Markdown du dossier `questions/` (un par thème, plus `situations.md`
+pour les situations de tir illustrées ; leurs dessins sont produits par `node tools/dessiner-situations.mjs`).
+Une question peut porter une image (`![description](images/fichier.jpg)`, images dans `questions/images/`). Pour en ajouter,
 modifier un fichier ou en déposer un nouveau, puis pousser sur GitHub : l'app trouve tous les fichiers
 du dossier. Le format est décrit dans `questions/LISEZMOI.md` ; `node tools/verifier-questions.mjs`
 vérifie les fichiers avant de les pousser.
