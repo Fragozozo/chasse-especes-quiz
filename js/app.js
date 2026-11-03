@@ -1,6 +1,6 @@
-import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=6";
-import { chargerQuestions } from "./questions.js?v=6";
-import { TRACES } from "./traces.js?v=6";
+import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=7";
+import { chargerQuestions } from "./questions.js?v=7";
+import { TRACES } from "./traces.js?v=7";
 
 // ---------- Utilitaires ----------
 const $ = (sel, el = document) => el.querySelector(sel);
@@ -71,7 +71,7 @@ let photos = {};
 let photosTraces = {};
 async function chargerCredits(fichier, dossier) {
   try {
-    const r = await fetch(`${fichier}?v=6`);
+    const r = await fetch(`${fichier}?v=7`);
     if (!r.ok) return {};
     const d = await r.json();
     for (const liste of Object.values(d)) for (const p of liste) p.src = dossier + p.fichierLocal;

@@ -1,5 +1,5 @@
 // Service worker : l'app fonctionne hors connexion après la première visite.
-const VERSION = "v6";
+const VERSION = "v7";
 const APP = `app-${VERSION}`;
 const PHOTOS = "photos";
 
@@ -7,15 +7,15 @@ const FICHIERS = [
   "./",
   "index.html",
   "manifest.webmanifest",
-  "css/app.css?v=6",
-  "js/app.js?v=6",
-  "js/especes.js?v=6",
+  "css/app.css?v=7",
+  "js/app.js?v=7",
+  "js/especes.js?v=7",
   "js/mammiferes.js",
   "js/oiseaux.js",
-  "js/traces.js?v=6",
-  "js/questions.js?v=6",
-  "photos/credits.json?v=6",
-  "photos/traces.json?v=6",
+  "js/traces.js?v=7",
+  "js/questions.js?v=7",
+  "photos/credits.json?v=7",
+  "photos/traces.json?v=7",
   "icons/icon-192.png",
   "icons/apple-touch-icon.png",
 ];

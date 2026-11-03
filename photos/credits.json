@@ -5869,6 +5869,15 @@
  ],
  "vison-europe": [
   {
+   "fichierLocal": "vison-europe-3.jpg",
+   "role": "",
+   "fichier": "European_Mink.jpg",
+   "auteur": "EfAston",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File:European_Mink.jpg"
+  },
+  {
    "fichierLocal": "vison-europe-1.jpg",
    "role": "",
    "fichier": "Mustela_lutreola_RU.jpg",
@@ -5885,6 +5894,15 @@
    "licence": "Public domain",
    "licenceUrl": "",
    "source": "https://commons.wikimedia.org/wiki/File:Mink1.jpg"
+  },
+  {
+   "fichierLocal": "vison-europe-4.jpg",
+   "role": "",
+   "fichier": "Mustela_lutreola.jpg",
+   "auteur": "Immortel",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Mustela_lutreola.jpg"
   }
  ]
 }
