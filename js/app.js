@@ -1,6 +1,6 @@
-import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=9";
-import { chargerQuestions } from "./questions.js?v=9";
-import { TRACES } from "./traces.js?v=9";
+import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=10";
+import { chargerQuestions } from "./questions.js?v=10";
+import { TRACES } from "./traces.js?v=10";
 
 // ---------- Utilitaires ----------
 const $ = (sel, el = document) => el.querySelector(sel);
@@ -71,7 +71,7 @@ let photos = {};
 let photosTraces = {};
 async function chargerCredits(fichier, dossier) {
   try {
-    const r = await fetch(`${fichier}?v=9`);
+    const r = await fetch(`${fichier}?v=10`);
     if (!r.ok) return {};
     const d = await r.json();
     for (const liste of Object.values(d)) for (const p of liste) p.src = dossier + p.fichierLocal;
@@ -87,7 +87,7 @@ const aPhoto = (e) => toutesPhotos(e.id).length > 0;
 const tirerPhoto = (id, role) => tirer(toutesPhotos(id).filter((p) => !role || p.role === role), 1)[0] || null;
 
 // ---------- État ----------
-const etat = { vue: "accueil", segment: "theorie", theme: "tous", themeQ: "tous", quiz: null, fiche: null, filtreFiches: "tous", recherche: "" };
+const etat = { vue: "accueil", segment: "theorie", theme: "tous", themeQ: "tous", quiz: null, fiche: null, filtreFiches: "tous", groupeFiches: null, recherche: "" };
 
 // ---------- Génération des questions ----------
 function qPhotoEspece(e) {
@@ -616,25 +616,49 @@ function rendreScore() {
 // ---------- Fiches ----------
 const sansAccents = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
+// Photo d'illustration de chaque catégorie sur l'accueil des fiches.
+const PHOTO_GROUPE = { grand: "cerf", carnivores: "renard", petits: "lievre", plaine: "faisan", migrateurs: "becasse", corvides: "pie", canards: "colvert", eau: "vanneau", rapaces: "buse" };
+const photoCategorie = (id) => toutesPhotos(id)[0]?.src || "";
+
+// Accueil des fiches : une tuile par catégorie et une tuile « Toutes les espèces ».
+// Une catégorie choisie (etat.groupeFiches) affiche sa liste ; la recherche cherche dans toutes les espèces.
 function rendreFiches() {
+  const g = etat.groupeFiches;
   const f = etat.filtreFiches;
   const r = sansAccents(etat.recherche.trim());
-  const correspond = (e) => (f === "tous" || e.statut === f) &&
+  const accueil = !g && !r;
+  const correspond = (e) => (f === "tous" || e.statut === f) && (!g || g === "tous" || r || e.groupe === g) &&
     (!r || sansAccents(`${e.nom} ${e.latin} ${e.aussi || ""}`).includes(r));
   const filtres = [["tous", "Toutes"], ...Object.entries(STATUTS).map(([k, s]) => [k, s.court])];
+  const titre = r ? "Recherche" : g === "tous" ? "Toutes les espèces" : g ? GROUPES[g].nom : "Fiches";
+  const tuile = (k, nom, n, photo) => `
+    <button type="button" class="tuile-categorie ${k === "tous" ? "toutes" : ""}" data-groupe="${k}">
+      ${photo ? `<img src="${h(photo)}" alt="" loading="lazy">` : ""}
+      <span class="tuile-texte"><b>${h(nom)}</b><small>${n} espèce${n > 1 ? "s" : ""}</small></span>
+    </button>`;
+
   app().innerHTML = `
-    <header class="titre-page"><h1>Fiches</h1><span class="badge">${ESPECES.length} espèces</span></header>
+    <header class="titre-page">
+      ${accueil ? "" : `<button type="button" class="bouton-icone" id="categories" aria-label="Retour aux catégories">${icone("retour")}</button>`}
+      <h1>${h(titre)}</h1>
+      <span class="badge">${accueil ? `${ESPECES.length} espèces` : `${ESPECES.filter(correspond).length} espèces`}</span>
+    </header>
     <input type="search" class="recherche" id="recherche" placeholder="Rechercher une espèce" value="${h(etat.recherche)}" autocomplete="off">
+    ${accueil ? `
+    <section class="categories">
+      ${tuile("tous", "Toutes les espèces", ESPECES.length, photoCategorie("sanglier"))}
+      ${Object.entries(GROUPES).map(([k, gr]) => tuile(k, gr.nom, ESPECES.filter((e) => e.groupe === k).length, photoCategorie(PHOTO_GROUPE[k]))).join("")}
+    </section>` : `
     <div class="chips defile" role="group" aria-label="Statut">
       ${filtres.map(([k, n]) => `<button type="button" class="chip ${k !== "tous" ? "s-" + k : ""}" data-filtre="${k}" aria-pressed="${f === k}">${h(n)}</button>`).join("")}
     </div>
     <div id="liste-fiches">
-    ${Object.entries(GROUPES).map(([k, g]) => {
+    ${Object.entries(GROUPES).map(([k, gr]) => {
       const liste = ESPECES.filter((e) => e.groupe === k && correspond(e));
       if (!liste.length) return "";
       return `
       <section class="groupe">
-        <h2>${h(g.nom)} <span class="compte">${liste.length}</span></h2>
+        ${g && g !== "tous" && !r ? `<p class="petit">${h(gr.resume)}</p>` : `<h2>${h(gr.nom)} <span class="compte">${liste.length}</span></h2>`}
         <ul class="fiches">
           ${liste.map((e) => `
             <li><button type="button" class="fiche-ligne" data-id="${e.id}">
@@ -646,7 +670,20 @@ function rendreFiches() {
         </ul>
       </section>`;
     }).join("") || `<p class="intro">Aucune espèce ne correspond.</p>`}
-    </div>`;
+    </div>`}`;
+
+  app().querySelectorAll("[data-groupe]").forEach((b) => b.addEventListener("click", () => {
+    etat.groupeFiches = b.dataset.groupe;
+    etat.filtreFiches = "tous";
+    rendreFiches();
+    window.scrollTo(0, 0);
+  }));
+  $("#categories")?.addEventListener("click", () => {
+    etat.groupeFiches = null;
+    etat.recherche = "";
+    rendreFiches();
+    window.scrollTo(0, 0);
+  });
   app().querySelectorAll("[data-filtre]").forEach((b) => b.addEventListener("click", () => {
     etat.filtreFiches = b.dataset.filtre;
     rendreFiches();
@@ -900,7 +937,11 @@ function rendre() {
 }
 
 // ---------- Démarrage ----------
-document.querySelectorAll(".onglet").forEach((b) => b.addEventListener("click", () => aller(b.dataset.vue)));
+document.querySelectorAll(".onglet").forEach((b) => b.addEventListener("click", () => {
+  // Toucher « Fiches » alors qu'on y est déjà ramène aux catégories.
+  if (b.dataset.vue === "fiches" && etat.vue === "fiches") { etat.groupeFiches = null; etat.recherche = ""; }
+  aller(b.dataset.vue);
+}));
 rendre();
 Promise.all([chargerPhotos(), chargerTraces(), chargerQuestions()]).then(([p, t, q]) => {
   photos = p;
