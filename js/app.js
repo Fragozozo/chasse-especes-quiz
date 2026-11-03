@@ -1,6 +1,6 @@
-import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=7";
-import { chargerQuestions } from "./questions.js?v=7";
-import { TRACES } from "./traces.js?v=7";
+import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=8";
+import { chargerQuestions } from "./questions.js?v=8";
+import { TRACES } from "./traces.js?v=8";
 
 // ---------- Utilitaires ----------
 const $ = (sel, el = document) => el.querySelector(sel);
@@ -71,7 +71,7 @@ let photos = {};
 let photosTraces = {};
 async function chargerCredits(fichier, dossier) {
   try {
-    const r = await fetch(`${fichier}?v=7`);
+    const r = await fetch(`${fichier}?v=8`);
     if (!r.ok) return {};
     const d = await r.json();
     for (const liste of Object.values(d)) for (const p of liste) p.src = dossier + p.fichierLocal;
@@ -104,10 +104,12 @@ function qPhotoEspece(e) {
 }
 
 function qStatut(e) {
+  const autres = tirer(Object.keys(STATUTS).filter((k) => k !== e.statut), 3);
   return {
     type: "statut", espece: e, photo: tirerPhoto(e.id),
     titre: "Quel est le statut de cet animal ?",
-    choix: Object.entries(STATUTS).map(([k, s]) => ({ cle: k, label: s.nom })),
+    // 4 réponses : le bon statut et 3 autres, dans l'ordre habituel.
+    choix: Object.entries(STATUTS).filter(([k]) => k === e.statut || autres.includes(k)).map(([k, s]) => ({ cle: k, label: s.nom })),
     bonne: e.statut,
   };
 }

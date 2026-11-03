@@ -19,6 +19,7 @@ export const STATUTS = {
   esod: { nom: "Chassable et ESOD", court: "ESOD", resume: "Espèce chassable, également classée « susceptible d'occasionner des dégâts » : elle peut aussi être piégée ou détruite hors période de chasse, selon les règles du département." },
   suspendue: { nom: "Chasse suspendue", court: "Suspendue", resume: "Espèce de la liste des chassables dont la chasse est suspendue (moratoire) ou interdite presque partout." },
   protegee: { nom: "Espèce protégée", court: "Protégée", resume: "Espèce protégée : la chasser, la capturer ou la détruire est interdit." },
+  autre: { nom: "Ni gibier ni protégée", court: "Ni gibier", resume: "Espèce qui n'est ni sur la liste des espèces chassables, ni protégée, ni classée ESOD : on ne la chasse pas, sa régulation relève d'autres règles (dératisation, hygiène publique)." },
 };
 
 // Les trois groupes d'ESOD.

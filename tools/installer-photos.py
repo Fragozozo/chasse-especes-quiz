@@ -45,6 +45,9 @@ credits_path = CREDITS
 anciens = json.loads(credits_path.read_text()) if credits_path.exists() else {}
 sortie = {}
 for id_, choix in selection.items():
+    # Espèces dont les candidates ne sont plus dans le dossier de travail : on garde les photos installées.
+    if not (TRAVAIL / id_ / "meta.json").exists():
+        continue
     meta = {ph["n"]: ph for ph in json.loads((TRAVAIL / id_ / "meta.json").read_text())}
     liste = []
     for k, c in enumerate(choix, 1):

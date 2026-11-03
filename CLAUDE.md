@@ -9,7 +9,7 @@ fiches détaillées et quiz. Projet frère de `~/Developer/chasse-quiz-app` (chi
 - Écrire une même chose toujours de la même façon : les quiz comparent les chaînes (noms des jeunes, périodes…).
 - `noms` (mâle, femelle, jeune) : mettre un vrai mot du vocabulaire (« Brocard », « Laie ») ; sinon « Mâle »,
   « Femelle », « Jeune » ou « X (mâle) », que les quiz de vocabulaire ignorent.
-- Statuts : `chassable`, `esod` (+ `esod: 1|2|3`), `suspendue` (moratoire), `protegee`. Les textes
+- Statuts : `chassable`, `esod` (+ `esod: 1|2|3`), `suspendue` (moratoire), `protegee`, `autre` (ni gibier ni protégée, ex. surmulot). Les textes
   réglementaires changent : vérifier sur des sources officielles avant de modifier un statut.
 - Photos : uniquement Wikimedia Commons sous licence libre, vérifiées à l'œil (espèce exacte, animal sauvage,
   pas d'animal de zoo évident, rôle mâle / femelle / jeune sûr, sinon pas de rôle). Crédits obligatoires.

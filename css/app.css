@@ -19,6 +19,7 @@
   --s-esod: #b8430a;
   --s-suspendue: #5f6470;
   --s-protegee: #b3261e;
+  --s-autre: #6b5b95;
 
   --titre: "Zilla Slab", Rockwell, "Roboto Slab", Georgia, serif;
   --texte: "Atkinson Hyperlegible", -apple-system, "Segoe UI", system-ui, sans-serif;
@@ -45,6 +46,8 @@
     --s-esod: #ff9a62;
     --s-suspendue: #b4b9c6;
     --s-protegee: #f2948c;
+  --s-autre: #b9aee0;
+    --s-autre: #b9aee0;
     color-scheme: dark;
   }
 }
@@ -136,6 +139,7 @@ p { margin: 0; }
 .s-esod { --c: var(--s-esod); }
 .s-suspendue { --c: var(--s-suspendue); }
 .s-protegee { --c: var(--s-protegee); }
+.s-autre { --c: var(--s-autre); }
 
 /* Modes */
 .modes { display: grid; gap: 10px; }

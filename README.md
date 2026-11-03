@@ -7,9 +7,9 @@ Fonctionne sur iPhone, hors connexion après la première visite.
 En ligne : https://fragozozo.github.io/chasse-especes-quiz/
 
 ## Contenu
-- 127 espèces : grand gibier, carnivores, lièvres, lapins et rongeurs, gibier de plaine et de montagne,
+- 128 espèces : grand gibier, carnivores, lièvres, lapins et rongeurs, gibier de plaine et de montagne,
   migrateurs terrestres, corvidés, canards et oies, limicoles et oiseaux d'eau, rapaces.
-- Pour chaque espèce, une fiche : statut (chassable, ESOD, chasse suspendue, protégée), taille et poids,
+- Pour chaque espèce, une fiche : statut (chassable, ESOD, chasse suspendue, protégée, ni gibier ni protégée), taille et poids,
   identification, mâle / femelle / jeune et leur nom, habitat, alimentation, reproduction, particularités,
   empreinte (photo pour 32 espèces, schéma simplifié sinon), risques de confusion.
 - 3 à 5 photos par espèce, en distinguant mâle, femelle et jeune quand c'est utile.
