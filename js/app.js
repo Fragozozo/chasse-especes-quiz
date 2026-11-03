@@ -1,6 +1,6 @@
-import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=8";
-import { chargerQuestions } from "./questions.js?v=8";
-import { TRACES } from "./traces.js?v=8";
+import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=9";
+import { chargerQuestions } from "./questions.js?v=9";
+import { TRACES } from "./traces.js?v=9";
 
 // ---------- Utilitaires ----------
 const $ = (sel, el = document) => el.querySelector(sel);
@@ -71,7 +71,7 @@ let photos = {};
 let photosTraces = {};
 async function chargerCredits(fichier, dossier) {
   try {
-    const r = await fetch(`${fichier}?v=8`);
+    const r = await fetch(`${fichier}?v=9`);
     if (!r.ok) return {};
     const d = await r.json();
     for (const liste of Object.values(d)) for (const p of liste) p.src = dossier + p.fichierLocal;
@@ -87,7 +87,7 @@ const aPhoto = (e) => toutesPhotos(e.id).length > 0;
 const tirerPhoto = (id, role) => tirer(toutesPhotos(id).filter((p) => !role || p.role === role), 1)[0] || null;
 
 // ---------- État ----------
-const etat = { vue: "accueil", theme: "tous", themeQ: "tous", quiz: null, fiche: null, filtreFiches: "tous", recherche: "" };
+const etat = { vue: "accueil", segment: "theorie", theme: "tous", themeQ: "tous", quiz: null, fiche: null, filtreFiches: "tous", recherche: "" };
 
 // ---------- Génération des questions ----------
 function qPhotoEspece(e) {
@@ -295,15 +295,16 @@ function examenOfficiel() {
 }
 
 const MODES = {
-  photos: { nom: "Reconnaître les espèces", desc: "Une photo, quatre noms : trouve la bonne espèce." },
-  statut: { nom: "Tirer ou ne pas tirer ?", desc: "Chassable, ESOD, chasse suspendue ou protégée : reconnais l'animal et son statut." },
-  sexe: { nom: "Mâle, femelle ou jeune ?", desc: "Distingue le brocard de la chevrette, le coq de la poule, le marcassin…" },
-  traces: { nom: "Empreintes", desc: "Associe chaque empreinte à l'animal qui la laisse." },
-  biologie: { nom: "Reproduction et vocabulaire", desc: "Rut, gestation, noms des mâles, femelles et jeunes." },
-  examen: { nom: "Révision des espèces", desc: "20 questions mélangées sur toutes les espèces." },
+  photos: { nom: "Reconnaître l'espèce", desc: "Une photo, quatre noms", icone: "photo" },
+  statut: { nom: "Tirer ou ne pas tirer ?", desc: "Chassable, ESOD, protégée…", icone: "cible" },
+  sexe: { nom: "Mâle, femelle ou jeune ?", desc: "Brocard, chevrette, faon…", icone: "sexe" },
+  traces: { nom: "Empreintes", desc: "Photos et schémas de traces", icone: "trace" },
+  biologie: { nom: "Reproduction et vocabulaire", desc: "Rut, gestation, noms des jeunes", icone: "biologie" },
+  examen: { nom: "Révision des espèces", desc: "20 questions mélangées", icone: "liste" },
   theorie: { nom: "Épreuve théorique", desc: "" },
   officiel: { nom: "Examen blanc", desc: "10 questions au format de l'examen, avec photos et situations de tir, dont une question de sécurité éliminatoire." },
-  erreurs: { nom: "Revoir mes erreurs", desc: "" },
+  erreurs: { nom: "Espèces ratées", desc: "", icone: "erreur" },
+  erreursQ: { nom: "Questions ratées", desc: "", icone: "erreur" },
 };
 
 function construireQuiz(mode) {
@@ -329,6 +330,8 @@ function construireQuiz(mode) {
     questions = quizTheorie(etat.themeQ);
   } else if (mode === "officiel") {
     questions = examenOfficiel();
+  } else if (mode === "erreursQ") {
+    questions = melanger(QUESTIONS.filter((q) => stats.savoirs[q.id] && !stats.savoirs[q.id].dernier)).slice(0, 10).map(qSavoir);
   } else if (mode === "erreurs") {
     const ratees = ESPECES.filter((e) => stats.especes[e.id] && !stats.especes[e.id].dernier && aPhoto(e));
     questions = melanger(ratees).slice(0, 10).map((e) => (Math.random() < 0.5 ? qPhotoEspece(e) : qStatut(e)));
@@ -349,6 +352,25 @@ function construireQuiz(mode) {
 // ---------- Rendu ----------
 const app = () => $("#app");
 
+// Couleur de chaque thème de l'épreuve théorique (classe t-<thème> dans app.css).
+const THEMES_COULEUR = ["faune", "chasse", "reglementation", "armes"];
+const classeTheme = (t) => `t-${THEMES_COULEUR.includes(t) ? t : "autre"}`;
+
+// Icônes au trait (24 × 24), en currentColor.
+const ICONES = {
+  photo: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  cible: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
+  sexe: '<circle cx="9" cy="14" r="4.5"/><path d="M12.5 10.5 19 4M14.5 4H19v4.5"/>',
+  trace: '<ellipse cx="12" cy="15" rx="4" ry="3.5"/><circle cx="7" cy="9" r="1.8"/><circle cx="10.5" cy="6.5" r="1.8"/><circle cx="14.5" cy="6.5" r="1.8"/><circle cx="18" cy="9" r="1.8"/>',
+  biologie: '<path d="M12 20c-4 0-7-3-7-7 0-5 4-9 7-9s7 4 7 9c0 4-3 7-7 7z"/><path d="M12 9v6M9 12h6"/>',
+  liste: '<path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/>',
+  erreur: '<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/>',
+  chevron: '<path d="M9 5l7 7-7 7"/>',
+  fermer: '<path d="M6 6l12 12M18 6L6 18"/>',
+  retour: '<path d="M15 5l-7 7 7 7"/>',
+};
+const icone = (nom, classe = "icone") => `<svg class="${classe}" viewBox="0 0 24 24" aria-hidden="true">${ICONES[nom]}</svg>`;
+
 function photoHtml(p, classe = "photo") {
   if (!p?.src) {
     return `<div class="${classe} photo-vide" role="img" aria-label="Photo indisponible"><span>Photo non disponible pour le moment</span></div>`;
@@ -364,59 +386,84 @@ function creditHtml(p) {
 const pastille = (e) => `<span class="pastille s-${e.statut}">${h(STATUTS[e.statut].court)}${e.esod ? ` ${e.esod}` : ""}</span>`;
 const vignette = (e) => {
   const p = toutesPhotos(e.id)[0];
-  return p ? `<img src="${h(p.src)}" alt="" loading="lazy">` : `<span class="vignette-vide"></span>`;
+  return p ? `<img class="vignette" src="${h(p.src)}" alt="" loading="lazy">` : `<span class="vignette vignette-vide"></span>`;
 };
 
+// Part des questions d'un thème réussies à la dernière tentative.
+function reussiteTheme(theme) {
+  const qs = QUESTIONS.filter((q) => theme === "tous" || q.t === theme);
+  if (!qs.length) return 0;
+  return Math.round((qs.filter((q) => stats.savoirs[q.id]?.dernier).length / qs.length) * 100);
+}
+const ratees = {
+  especes: () => ESPECES.filter((e) => stats.especes[e.id] && !stats.especes[e.id].dernier && aPhoto(e)).length,
+  questions: () => QUESTIONS.filter((q) => stats.savoirs[q.id] && !stats.savoirs[q.id].dernier).length,
+};
+const ligneMode = (k, detail = MODES[k].desc) => `
+  <button type="button" class="ligne" data-mode="${k}">
+    <span class="ligne-icone">${icone(MODES[k].icone)}</span>
+    <span class="ligne-texte"><b>${h(MODES[k].nom)}</b><small>${h(detail)}</small></span>
+    ${icone("chevron", "chevron")}
+  </button>`;
+
+// ---------- Réviser ----------
 function rendreAccueil() {
-  const nbM = ESPECES.filter((e) => maitrisee(e.id)).length;
-  const nbErreurs = ESPECES.filter((e) => stats.especes[e.id] && !stats.especes[e.id].dernier && aPhoto(e)).length;
-  const derniere = stats.sessions[stats.sessions.length - 1];
-  const mode = (k, classe = "") => `
-    <button type="button" class="mode ${classe}" data-mode="${k}">
-      <span class="mode-nom">${h(MODES[k].nom)}</span>
-      <span class="mode-desc">${h(MODES[k].desc)}</span>
-    </button>`;
+  const derniers = stats.sessions.filter((x) => x.mode === "officiel");
+  const dernier = derniers[derniers.length - 1];
+  const nbQ = ratees.questions(), nbE = ratees.especes();
+  const segment = etat.segment || "theorie";
+  const themes = Object.entries(THEMES_Q);
+
   app().innerHTML = `
-    <header class="entete">
-      <p class="surtitre">Permis de chasser · Épreuve théorique</p>
-      <h1>Faune et chasse</h1>
-      <p class="intro">Reconnais ${ESPECES.length} espèces : gibier, ESOD et espèces protégées.</p>
+    <header class="titre-page">
+      <h1>Réviser</h1>
+      <span class="badge">${QUESTIONS.length} questions · ${ESPECES.length} espèces</span>
     </header>
 
-    <section class="progres" aria-label="Progression">
-      <div class="jauge"><div class="jauge-remplie" style="width:${Math.round((nbM / ESPECES.length) * 100)}%"></div></div>
-      <p><strong>${nbM}</strong> espèce${nbM > 1 ? "s" : ""} maîtrisée${nbM > 1 ? "s" : ""} sur ${ESPECES.length}${derniere ? ` · dernier quiz : ${derniere.score}/${derniere.total}` : ""}</p>
-    </section>
-
-    <section class="modes" aria-labelledby="t-theorie">
-      <h2 id="t-theorie" class="etiquette">Épreuve théorique · ${QUESTIONS.length} questions</h2>
-      ${mode("officiel", "mode-principal")}
-      <div class="chips" role="group">
-        ${[["tous", `Toutes (${QUESTIONS.length})`], ...Object.entries(THEMES_Q).map(([k, n]) => [k, `${n} (${QUESTIONS.filter((q) => q.t === k).length})`])]
-          .map(([k, n]) => `<button type="button" class="chip" data-theorie="${h(k)}">${h(n)}</button>`).join("")}
+    <section class="carte-examen">
+      <div>
+        <b>Examen blanc</b>
+        <small>Format officiel : 10 questions, dont une éliminatoire${dernier ? ` · dernier : ${dernier.score}/${dernier.total}` : ""}</small>
       </div>
+      <button type="button" class="bouton compact" data-mode="officiel">Lancer</button>
     </section>
 
-    <section aria-labelledby="t-theme">
-      <h2 id="t-theme" class="etiquette">Reconnaissance des espèces · thème travaillé</h2>
-      <div class="chips" role="group">
+    <div class="segments" role="tablist">
+      <button type="button" role="tab" class="segment" data-segment="theorie" aria-selected="${segment === "theorie"}">Épreuve théorique</button>
+      <button type="button" role="tab" class="segment" data-segment="especes" aria-selected="${segment === "especes"}">Espèces</button>
+    </div>
+
+    ${segment === "theorie" ? `
+    <section class="liste-cartes">
+      ${themes.map(([k, nom], i) => {
+        const n = QUESTIONS.filter((q) => q.t === k).length;
+        const illus = QUESTIONS.filter((q) => q.t === k && q.image).length;
+        return `
+        <button type="button" class="ligne theme ${classeTheme(k)}" data-theorie="${h(k)}">
+          <span class="num">${i + 1}</span>
+          <span class="ligne-texte"><b>${h(nom)}</b><small>${n} questions${k === "faune" ? " · photos" : illus ? " · situations" : ""}</small></span>
+          <span class="pct">${reussiteTheme(k)} %</span>
+        </button>`;
+      }).join("")}
+      <button type="button" class="ligne theme t-tous" data-theorie="tous">
+        <span class="num">${icone("liste")}</span>
+        <span class="ligne-texte"><b>Toutes les questions</b><small>${QUESTIONS.length} questions mélangées</small></span>
+        <span class="pct">${reussiteTheme("tous")} %</span>
+      </button>
+      ${nbQ ? ligneMode("erreursQ", `${nbQ} question${nbQ > 1 ? "s" : ""} à revoir`) : ""}
+    </section>` : `
+    <section>
+      <div class="chips defile" role="group" aria-label="Groupe d'espèces">
         ${Object.entries(THEMES).map(([k, t]) => `<button type="button" class="chip" data-theme="${k}" aria-pressed="${etat.theme === k}">${h(t.nom)}</button>`).join("")}
       </div>
     </section>
+    <section class="liste-cartes">
+      ${["photos", "statut", "sexe", "traces", "biologie", "examen"].map((k) => ligneMode(k)).join("")}
+      ${nbE ? ligneMode("erreurs", `${nbE} espèce${nbE > 1 ? "s" : ""} à revoir`) : ""}
+    </section>`}`;
 
-    <section class="modes" aria-label="Entraînements">
-      ${mode("photos")}
-      ${mode("statut")}
-      ${mode("sexe")}
-      ${mode("traces")}
-      ${mode("biologie")}
-      ${mode("examen")}
-      ${nbErreurs ? `<button type="button" class="mode mode-erreurs" data-mode="erreurs">
-        <span class="mode-nom">Revoir mes erreurs</span>
-        <span class="mode-desc">${nbErreurs} espèce${nbErreurs > 1 ? "s" : ""} ratée${nbErreurs > 1 ? "s" : ""} à la dernière rencontre.</span>
-      </button>` : ""}
-    </section>`;
-
+  app().querySelectorAll("[data-segment]").forEach((b) =>
+    b.addEventListener("click", () => { etat.segment = b.dataset.segment; rendreAccueil(); }));
   app().querySelectorAll("[data-theme]").forEach((b) =>
     b.addEventListener("click", () => { etat.theme = b.dataset.theme; rendreAccueil(); }));
   app().querySelectorAll("[data-mode]").forEach((b) =>
@@ -452,55 +499,59 @@ function explication(q) {
   return `
     <p class="exp-nom"><strong>${h(e.nom)}</strong> <em class="latin">${h(e.latin)}</em> ${pastille(e)}</p>
     ${detail}
-    <button type="button" class="lien" id="voir-fiche" data-id="${e.id}">Voir la fiche</button>
+    <button type="button" class="lien" id="voir-fiche" data-id="${e.id}">Voir la fiche ›</button>
     ${q.photo ? creditHtml(q.photo) : ""}`;
 }
 
+// ---------- Quiz ----------
 function rendreQuiz() {
   const z = etat.quiz;
   if (!z.questions.length) {
-    app().innerHTML = `<div class="vide"><p>Aucune question disponible pour ce thème.</p><button class="bouton" id="retour">Retour</button></div>`;
+    app().innerHTML = `<div class="vide"><p>Aucune question disponible pour ce choix.</p><button class="bouton" id="retour">Retour</button></div>`;
     $("#retour").onclick = () => aller("accueil");
     return;
   }
   const q = z.questions[z.i];
   const repondu = z.reponse !== null;
   const juste = repondu && estJuste(q, z.reponse);
+  const theme = q.type === "savoir" ? q.theme : "faune";
 
   let media = "";
   if (q.photo !== undefined) media = photoHtml(q.photo);
   else if (q.image) media = `<figure class="photo illustration"><img src="${h(q.image.src)}" alt="${h(q.image.alt)}"></figure>`;
   else if (q.type === "trace") media = q.photoTrace ? photoHtml(q.photoTrace) : `<div class="trace-grande">${TRACES[q.espece.trace].dessin}</div>`;
 
-  const choix = q.choix.map((c) => {
+  const choix = q.choix.map((c, i) => {
     let etatChoix = "";
     if (repondu) {
       if (estJuste(q, c.cle)) etatChoix = "bon";
       else if (c.cle === z.reponse) etatChoix = "faux";
       else etatChoix = "neutre";
     }
-    return `<button type="button" class="choix ${etatChoix}" data-cle="${h(c.cle)}" ${repondu ? "disabled" : ""}><span>${h(c.label)}</span></button>`;
+    return `<button type="button" class="choix ${etatChoix}" data-cle="${h(c.cle)}" ${repondu ? "disabled" : ""}><span class="lettre">${"ABCD"[i] || ""}</span><span>${h(c.label)}</span></button>`;
   }).join("");
 
   app().innerHTML = `
     <div class="quiz-barre">
-      <button type="button" class="lien" id="quitter">Quitter</button>
+      <button type="button" class="bouton-icone" id="quitter" aria-label="Quitter">${icone("fermer")}</button>
       <span class="quiz-mode">${h(titreQuiz(z))}</span>
       <span class="quiz-compteur">${z.i + 1}/${z.questions.length}</span>
     </div>
-    <div class="quiz-avance"><div style="width:${(z.i / z.questions.length) * 100}%"></div></div>
+    <div class="quiz-avance ${classeTheme(theme)}"><div style="width:${((z.i + (repondu ? 1 : 0)) / z.questions.length) * 100}%"></div></div>
+    <div class="etiquettes">
+      <span class="etiquette-theme ${classeTheme(theme)}">${h(q.type === "savoir" ? THEMES_Q[q.theme] || "" : "Faune et habitats")}</span>
+      ${q.elimExamen ? `<span class="etiquette-elim">Question éliminatoire</span>` : ""}
+    </div>
     ${media}
-    ${q.elimExamen ? `<p class="eliminatoire">Question éliminatoire</p>` : ""}
-    ${q.type === "savoir" && THEMES_Q[q.theme] ? `<p class="theme-question">${h(THEMES_Q[q.theme])}</p>` : ""}
     ${q.sousTitre ? `<p class="question-espece">${h(q.sousTitre)}</p>` : ""}
     <h2 class="question">${h(q.titre)}</h2>
     <div class="liste-choix">${choix}</div>
     ${repondu ? `
       <div class="retour ${juste ? "ok" : "ko"}" role="status">
-        <p class="verdict">${juste ? "Bonne réponse" : "Raté"}</p>
+        <p class="verdict">${juste ? "✓ Bonne réponse" : "✗ Mauvaise réponse"}</p>
         ${explication(q)}
       </div>
-      <button type="button" class="bouton" id="suivant">${z.i + 1 < z.questions.length ? "Question suivante" : "Voir mon score"}</button>` : ""}
+      <button type="button" class="bouton" id="suivant">${z.i + 1 < z.questions.length ? "Question suivante" : "Voir mon résultat"}</button>` : ""}
   `;
 
   $("#quitter").onclick = () => aller("accueil");
@@ -535,7 +586,7 @@ function suivante() {
     rendreQuiz();
     window.scrollTo(0, 0);
   } else {
-    stats.sessions.push({ date: new Date().toISOString(), mode: z.mode, score: z.score, total: z.questions.length });
+    stats.sessions.push({ date: new Date().toISOString(), mode: z.mode, titre: titreQuiz(z), score: z.score, total: z.questions.length, elimine: !!z.elimine });
     stats.sessions = stats.sessions.slice(-50);
     sauverStats();
     etat.vue = "score";
@@ -546,15 +597,16 @@ function suivante() {
 function rendreScore() {
   const z = etat.quiz;
   const pct = Math.round((z.score / z.questions.length) * 100);
-  const message = z.elimine ? "Éliminé : la question de sécurité est ratée. À l'examen, cette erreur suffit à échouer." : pct >= 90 ? "Excellent, tu connais ton sujet." : pct >= 70 ? "Bon résultat, encore un effort." : pct >= 50 ? "C'est un début. Relis les fiches du thème." : "Il faut réviser : commence par les fiches.";
+  const message = z.elimine ? "La question de sécurité est ratée : à l'examen, cette erreur suffit à échouer." : pct >= 90 ? "Excellent, tu connais ton sujet." : pct >= 70 ? "Bon résultat, encore un effort." : pct >= 50 ? "C'est un début. Relis les fiches et recommence." : "Il faut réviser : commence par les fiches.";
   app().innerHTML = `
-    <section class="score">
+    <section class="score ${z.elimine ? "elimine" : pct >= 70 ? "reussi" : ""}">
       <p class="surtitre">${h(titreQuiz(z))}</p>
-      <p class="score-chiffre"><span>${z.score}</span>/${z.questions.length}</p>
+      <div class="anneau" style="--p:${pct}"><span><b>${z.score}</b>/${z.questions.length}</span></div>
+      ${z.elimine ? `<p class="verdict-score">Éliminé</p>` : ""}
       <p>${message}</p>
       <div class="actions">
         <button type="button" class="bouton" id="rejouer">Recommencer</button>
-        <button type="button" class="bouton secondaire" id="accueil">Accueil</button>
+        <button type="button" class="bouton secondaire" id="accueil">Retour aux révisions</button>
       </div>
     </section>`;
   $("#rejouer").onclick = () => { etat.themeQ = z.themeQ; demarrer(z.mode); };
@@ -571,9 +623,9 @@ function rendreFiches() {
     (!r || sansAccents(`${e.nom} ${e.latin} ${e.aussi || ""}`).includes(r));
   const filtres = [["tous", "Toutes"], ...Object.entries(STATUTS).map(([k, s]) => [k, s.court])];
   app().innerHTML = `
-    <header class="entete compacte"><h1>Fiches</h1></header>
+    <header class="titre-page"><h1>Fiches</h1><span class="badge">${ESPECES.length} espèces</span></header>
     <input type="search" class="recherche" id="recherche" placeholder="Rechercher une espèce" value="${h(etat.recherche)}" autocomplete="off">
-    <div class="chips" role="group" aria-label="Statut">
+    <div class="chips defile" role="group" aria-label="Statut">
       ${filtres.map(([k, n]) => `<button type="button" class="chip ${k !== "tous" ? "s-" + k : ""}" data-filtre="${k}" aria-pressed="${f === k}">${h(n)}</button>`).join("")}
     </div>
     <div id="liste-fiches">
@@ -583,14 +635,13 @@ function rendreFiches() {
       return `
       <section class="groupe">
         <h2>${h(g.nom)} <span class="compte">${liste.length}</span></h2>
-        <p class="groupe-resume">${h(g.resume)}</p>
         <ul class="fiches">
           ${liste.map((e) => `
             <li><button type="button" class="fiche-ligne" data-id="${e.id}">
               ${vignette(e)}
-              <span class="fiche-texte"><span class="fiche-nom">${h(e.nom)}</span><span class="fiche-sous"><em>${h(e.latin)}</em></span></span>
+              <span class="fiche-texte"><span class="fiche-nom">${h(e.nom)}${maitrisee(e.id) ? ` <span class="coche" title="Maîtrisée">✓</span>` : ""}</span><span class="fiche-sous">${h(e.latin)}</span></span>
               ${pastille(e)}
-              ${maitrisee(e.id) ? `<span class="coche" title="Maîtrisée">✓</span>` : ""}
+              ${icone("chevron", "chevron")}
             </button></li>`).join("")}
         </ul>
       </section>`;
@@ -620,10 +671,9 @@ function ouvrirFiche(id) {
 
 const legende = (e, p) => (p?.role ? libelleRole(e, p.role) : "");
 
-function rendreFiche(photoChoisie) {
+function rendreFiche() {
   const e = parId[etat.fiche];
   const liste = toutesPhotos(e.id);
-  const photoFiche = photoChoisie || liste[0] || null;
   const s = stats.especes[e.id];
   const pos = ORDRE_FICHES.indexOf(e.id);
   const prec = parId[ORDRE_FICHES[pos - 1]];
@@ -631,57 +681,64 @@ function rendreFiche(photoChoisie) {
   const oiseau = estOiseau(e);
   const noms = Object.keys(ROLES).filter((r) => nomPropre(e, r));
   const t = TRACES[e.trace];
-  const section = (titre, contenu) => contenu ? `<section class="rubrique"><h2>${titre}</h2>${contenu}</section>` : "";
+  // Rubrique repliable ; l'identification est ouverte par défaut.
+  const rubrique = (titre, contenu, ouverte = false) => `
+    <details class="rubrique" ${ouverte ? "open" : ""}><summary>${titre}${icone("chevron", "chevron")}</summary><div class="rubrique-corps">${contenu}</div></details>`;
 
   app().innerHTML = `
     <div class="quiz-barre">
-      <button type="button" class="lien" id="retour">‹ Fiches</button>
-      <span class="quiz-mode"></span>
+      <button type="button" class="bouton-icone" id="retour" aria-label="Retour aux fiches">${icone("retour")}</button>
+      <span class="quiz-mode">${h(GROUPES[e.groupe].nom)}</span>
       <span class="quiz-compteur">${pos + 1}/${ORDRE_FICHES.length}</span>
     </div>
-    <div class="photo-cadre">
-      ${photoHtml(photoFiche)}
-      ${legende(e, photoFiche) ? `<span class="photo-role">${h(legende(e, photoFiche))}</span>` : ""}
-    </div>
-    ${creditHtml(photoFiche)}
-    ${liste.length > 1 ? `<div class="galerie" role="group" aria-label="Autres photos">
-      ${liste.map((p, i) => `<button type="button" class="galerie-vignette" data-i="${i}" aria-pressed="${p === photoFiche}" aria-label="Photo ${i + 1}${p.role ? ` (${ROLES[p.role]})` : ""}"><img src="${h(p.src)}" alt="" loading="lazy">${p.role ? `<span>${h(ROLES[p.role])}</span>` : ""}</button>`).join("")}
-    </div>` : ""}
-    <header class="fiche-entete">
-      <h1 class="fiche-titre">${h(e.nom)}</h1>
-      <p class="latin">${h(e.latin)}${e.aussi ? ` · aussi appelé ${h(e.aussi)}` : ""}</p>
-      <p>${pastille(e)} <span class="sous">${h(GROUPES[e.groupe].nom)}</span></p>
+
+    <header class="fiche-tete">
+      ${vignette(e)}
+      <div>
+        <h1 class="fiche-titre">${h(e.nom)}</h1>
+        <p class="latin">${h(e.latin)}</p>
+        ${e.aussi ? `<p class="petit">Aussi appelé ${h(e.aussi)}</p>` : ""}
+      </div>
     </header>
 
     <div class="statut-bloc s-${e.statut}">
-      <p><strong>${h(STATUTS[e.statut].nom)}.</strong> ${h(e.chasse)}</p>
-      ${e.esod ? `<p class="petit">${h(GROUPES_ESOD[e.esod])}</p>` : ""}
+      <p><strong>${h(STATUTS[e.statut].nom)}${e.esod ? ` (groupe ${e.esod})` : ""}.</strong> ${h(e.chasse)}</p>
     </div>
+
+    ${liste.length ? `<div class="carrousel" aria-label="Photos">
+      ${liste.map((p) => `<figure class="diapo">
+        <img src="${h(p.src)}" alt="" loading="lazy">
+        ${legende(e, p) ? `<span class="photo-role">${h(legende(e, p))}</span>` : ""}
+        <figcaption class="credit">${h(p.auteur || "Wikimedia Commons")}${p.licence ? `, ${h(p.licence)}` : ""}${p.source ? ` · <a href="${h(p.source)}" target="_blank" rel="noopener">source</a>` : ""}</figcaption>
+      </figure>`).join("")}
+    </div>` : ""}
 
     <dl class="chiffres">
       <div><dt>Taille</dt><dd>${h(e.taille)}</dd></div>
       <div><dt>Poids</dt><dd>${h(e.poids)}</dd></div>
     </dl>
 
-    ${section("Identification", `<ul class="signes">${e.signes.map((x) => `<li>${h(x)}</li>`).join("")}</ul>`)}
-    ${section("Mâle, femelle et jeune", `
-      ${noms.length ? `<dl class="noms">${noms.map((r) => `<div><dt>${ROLES[r]}</dt><dd>${h(nomPropre(e, r))}</dd></div>`).join("")}</dl>` : ""}
-      <p>${h(e.sexes)}</p>`)}
-    ${section("Habitat et alimentation", `<p>${h(e.habitat)}</p><p>${h(e.regime)}</p>`)}
-    ${section("Reproduction", `
-      <dl class="chiffres">
-        <div><dt>${oiseau ? "Nidification" : "Période"}</dt><dd>${h(e.repro.periode)}</dd></div>
-        <div><dt>${oiseau ? "Incubation" : "Gestation"}</dt><dd>${h(e.repro.duree)}</dd></div>
-        <div><dt>${oiseau ? "Ponte" : "Jeunes"}</dt><dd>${h(e.repro.jeunes)}</dd></div>
-      </dl>
-      <p>${h(e.repro.texte)}</p>`)}
-    ${section("Particularités", `<p>${h(e.particularites)}</p>`)}
-    ${section("Traces", `
-      ${(photosTraces[e.id] || []).map((p) => `${photoHtml(p, "photo photo-trace")}${creditHtml(p)}`).join("")}
-      ${t && !photosTraces[e.id]?.length ? `<div class="trace-fiche"><div class="trace-petite">${t.dessin}</div><p class="petit"><strong>${h(t.nom)}</strong><br>${h(t.taille)} · schéma simplifié</p></div>` : ""}
-      <p>${h(e.traces)}</p>`)}
-    ${section("Risques de confusion", `<p>${h(e.confusions)}</p>`)}
-    ${s ? `<p class="petit">Mes réponses : ${s.ok} bonne${s.ok > 1 ? "s" : ""} sur ${s.total}</p>` : ""}
+    <div class="rubriques">
+      ${rubrique("Identification", `<ul class="signes">${e.signes.map((x) => `<li>${h(x)}</li>`).join("")}</ul>`, true)}
+      ${rubrique("Mâle, femelle et jeune", `
+        ${noms.length ? `<dl class="noms">${noms.map((r) => `<div><dt>${ROLES[r]}</dt><dd>${h(nomPropre(e, r))}</dd></div>`).join("")}</dl>` : ""}
+        <p>${h(e.sexes)}</p>`)}
+      ${rubrique("Habitat et alimentation", `<p>${h(e.habitat)}</p><p>${h(e.regime)}</p>`)}
+      ${rubrique("Reproduction", `
+        <dl class="chiffres">
+          <div><dt>${oiseau ? "Nidification" : "Période"}</dt><dd>${h(e.repro.periode)}</dd></div>
+          <div><dt>${oiseau ? "Incubation" : "Gestation"}</dt><dd>${h(e.repro.duree)}</dd></div>
+          <div><dt>${oiseau ? "Ponte" : "Jeunes"}</dt><dd>${h(e.repro.jeunes)}</dd></div>
+        </dl>
+        <p>${h(e.repro.texte)}</p>`)}
+      ${rubrique("Particularités", `<p>${h(e.particularites)}</p>`)}
+      ${rubrique("Traces", `
+        ${(photosTraces[e.id] || []).map((p) => `${photoHtml(p, "photo photo-trace")}${creditHtml(p)}`).join("")}
+        ${t && !photosTraces[e.id]?.length ? `<div class="trace-fiche"><div class="trace-petite">${t.dessin}</div><p class="petit"><strong>${h(t.nom)}</strong><br>${h(t.taille)} · schéma simplifié</p></div>` : ""}
+        <p>${h(e.traces)}</p>`)}
+      ${rubrique("Risques de confusion", `<p>${h(e.confusions)}</p>`)}
+    </div>
+    ${s ? `<p class="petit">Mes réponses sur cette espèce : ${s.ok} bonne${s.ok > 1 ? "s" : ""} sur ${s.total}</p>` : ""}
 
     <nav class="nav-fiches" aria-label="Autres fiches">
       <button type="button" class="nav-fiche" data-id="${prec?.id || ""}" ${prec ? "" : "disabled"}>
@@ -693,25 +750,71 @@ function rendreFiche(photoChoisie) {
     </nav>`;
 
   $("#retour").onclick = () => aller("fiches");
-  const ouvrir = (id) => {
-    if (!id) return;
-    etat.fiche = id;
+  app().querySelectorAll(".nav-fiche").forEach((b) => b.addEventListener("click", () => {
+    if (!b.dataset.id) return;
+    etat.fiche = b.dataset.id;
     rendreFiche();
     window.scrollTo(0, 0);
-  };
-  app().querySelectorAll(".galerie-vignette").forEach((b) => b.addEventListener("click", () => rendreFiche(liste[Number(b.dataset.i)])));
-  app().querySelectorAll(".nav-fiche").forEach((b) => b.addEventListener("click", () => ouvrir(b.dataset.id)));
+  }));
+}
 
-  // Glisser vers la gauche ou la droite sur la photo pour changer de fiche.
-  const zone = $(".photo", app());
-  let x0 = null, y0 = null;
-  zone?.addEventListener("touchstart", (ev) => { x0 = ev.touches[0].clientX; y0 = ev.touches[0].clientY; }, { passive: true });
-  zone?.addEventListener("touchend", (ev) => {
-    if (x0 === null) return;
-    const dx = ev.changedTouches[0].clientX - x0, dy = ev.changedTouches[0].clientY - y0;
-    x0 = null;
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) ouvrir(dx < 0 ? suiv?.id : prec?.id);
-  });
+// ---------- Progrès ----------
+function rendreProgres() {
+  const nbM = ESPECES.filter((e) => maitrisee(e.id)).length;
+  const examens = stats.sessions.filter((x) => x.mode === "officiel");
+  const reussis = examens.filter((x) => !x.elimine && x.score >= 8).length;
+  const meilleur = examens.reduce((m, x) => Math.max(m, x.score), 0);
+  const nbQ = ratees.questions(), nbE = ratees.especes();
+  const date = (iso) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  const barre = (pct, classe) => `<div class="barre ${classe}"><div style="width:${pct}%"></div></div>`;
+
+  app().innerHTML = `
+    <header class="titre-page"><h1>Progrès</h1></header>
+
+    <section class="stats">
+      <div><b>${examens.length}</b><small>examens blancs</small></div>
+      <div><b>${examens.length ? `${meilleur}/10` : "–"}</b><small>meilleur score</small></div>
+      <div><b>${reussis}</b><small>réussis (8/10 et plus)</small></div>
+    </section>
+
+    <section class="carte">
+      <h2>Épreuve théorique</h2>
+      ${Object.entries(THEMES_Q).map(([k, nom]) => `
+        <div class="progres-ligne"><span>${h(nom)}</span><b>${reussiteTheme(k)} %</b></div>
+        ${barre(reussiteTheme(k), classeTheme(k))}`).join("")}
+      <p class="petit">Part des questions du thème réussies la dernière fois qu'elles sont tombées.</p>
+    </section>
+
+    <section class="carte">
+      <h2>Espèces</h2>
+      <div class="progres-ligne"><span>Espèces maîtrisées</span><b>${nbM}/${ESPECES.length}</b></div>
+      ${barre(Math.round((nbM / ESPECES.length) * 100), "t-faune")}
+      <p class="petit">Une espèce est maîtrisée après au moins 2 bonnes réponses, dont la dernière.</p>
+    </section>
+
+    ${nbQ || nbE ? `<section class="liste-cartes">
+      ${nbQ ? ligneMode("erreursQ", `${nbQ} question${nbQ > 1 ? "s" : ""} à revoir`) : ""}
+      ${nbE ? ligneMode("erreurs", `${nbE} espèce${nbE > 1 ? "s" : ""} à revoir`) : ""}
+    </section>` : ""}
+
+    <section class="carte">
+      <h2>Derniers entraînements</h2>
+      ${stats.sessions.length ? `<ul class="historique">${stats.sessions.slice(-8).reverse().map((x) => `
+        <li><span>${h(x.titre || MODES[x.mode]?.nom || "")}<small>${date(x.date)}</small></span><b class="${x.elimine ? "ko" : ""}">${x.elimine ? "Éliminé · " : ""}${x.score}/${x.total}</b></li>`).join("")}</ul>`
+      : `<p class="petit">Aucun entraînement terminé pour l'instant.</p>`}
+    </section>
+
+    <button type="button" class="bouton secondaire" id="reinit">Effacer ma progression</button>
+    <p id="confirmation" class="petit" hidden>Touche encore une fois pour confirmer.</p>`;
+
+  app().querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => demarrer(b.dataset.mode)));
+  let arme = false;
+  $("#reinit").onclick = () => {
+    if (!arme) { arme = true; $("#confirmation").hidden = false; return; }
+    stats = statsVides();
+    sauverStats();
+    rendreProgres();
+  };
 }
 
 // ---------- Infos ----------
@@ -730,9 +833,9 @@ function rendreInfos() {
   const nbTraces = Object.values(photosTraces).flat().length;
   const standalone = window.matchMedia?.("(display-mode: standalone)").matches || navigator.standalone;
   app().innerHTML = `
-    <header class="entete compacte"><h1>Infos</h1></header>
+    <header class="titre-page"><h1>Infos</h1></header>
 
-    <section class="bloc">
+    <section class="carte">
       <h2>Installer sur iPhone</h2>
       ${standalone ? `<p>L'application est installée sur ton écran d'accueil.</p>` : `
       <ol class="etapes">
@@ -742,56 +845,44 @@ function rendreInfos() {
       </ol>`}
     </section>
 
-    <section class="bloc">
-      <h2>Utilisation hors connexion</h2>
-      <p>${nbPhotos} photos pour ${ESPECES.filter(aPhoto).length} espèces sur ${ESPECES.length}, et ${nbTraces} photos d'empreintes. Télécharge-les pour réviser sans réseau.</p>
+    <section class="carte">
+      <h2>Hors connexion</h2>
+      <p>${nbPhotos} photos d'espèces et ${nbTraces} photos d'empreintes. Télécharge-les pour réviser sans réseau.</p>
       <button type="button" class="bouton" id="precharger">Télécharger les photos</button>
       <p id="etat-telechargement" class="petit" role="status"></p>
     </section>
 
-    <section class="bloc">
+    <section class="carte">
       <h2>Les statuts</h2>
       <dl class="noms">${Object.entries(STATUTS).map(([k, s]) => `<div><dt><span class="pastille s-${k}">${h(s.court)}</span></dt><dd>${h(s.resume)}</dd></div>`).join("")}</dl>
       <ul class="signes petit">${Object.values(GROUPES_ESOD).map((g) => `<li>${h(g)}</li>`).join("")}</ul>
-      <p class="petit">Les listes d'espèces chassables et ESOD, les périodes de chasse et les quotas dépendent des arrêtés nationaux et préfectoraux, qui changent régulièrement : vérifie toujours les textes en vigueur dans ton département (fédération départementale des chasseurs, préfecture).</p>
+      <p class="petit">Les listes d'espèces chassables et ESOD, les périodes de chasse et les quotas dépendent des arrêtés nationaux et préfectoraux, qui changent régulièrement : vérifie toujours les textes en vigueur dans ton département.</p>
     </section>
 
-    <section class="bloc">
+    <section class="carte">
       <h2>Ajouter des questions</h2>
-      <p class="petit">Les questions de l'épreuve théorique sont dans le dossier <code>questions/</code> du dépôt GitHub, un fichier Markdown par thème. Pour en ajouter, modifie un fichier ou déposes-en un nouveau : l'application le charge à la prochaine ouverture avec du réseau. Le format est expliqué dans <code>questions/LISEZMOI.md</code>.</p>
+      <p class="petit">Les questions sont dans le dossier <code>questions/</code> du dépôt GitHub, un fichier Markdown par thème. Modifie un fichier ou déposes-en un nouveau : l'application le charge à la prochaine ouverture avec du réseau. Le format est expliqué dans <code>questions/LISEZMOI.md</code>.</p>
     </section>
 
-    <section class="bloc">
-      <h2>Ma progression</h2>
-      <p>${stats.sessions.length} quiz terminés.</p>
-      <button type="button" class="bouton secondaire" id="reinit">Effacer ma progression</button>
-      <p id="confirmation" class="petit" hidden>Touche encore une fois pour confirmer.</p>
-    </section>
-
-    <section class="bloc">
-      <h2>Sources et crédits photo</h2>
-      <p class="petit">Contenu pédagogique rédigé pour la préparation à l'examen du permis de chasser, à compléter avec le manuel officiel de l'OFB. Quand aucune photo d'empreinte libre n'a été trouvée, l'empreinte est montrée par un schéma simplifié. Photos sous licence libre provenant de Wikimedia Commons ; chaque auteur est cité ci-dessous.</p>
-      <ul class="credits">
-        ${ESPECES.map((e) => {
-          const liste = [...toutesPhotos(e.id), ...(photosTraces[e.id] || []).map((p) => ({ ...p, auteur: `empreinte : ${p.auteur || "Wikimedia Commons"}` }))];
-          if (!liste.length) return "";
-          return `<li><strong>${h(e.nom)}</strong> : ${liste.map((p) => `${h(p.auteur || "Wikimedia Commons")}${p.licence ? `, ${h(p.licence)}` : ""}${p.source ? ` (<a href="${h(p.source)}" target="_blank" rel="noopener">source</a>)` : ""}`).join(" ; ")}</li>`;
-        }).join("")}
-      </ul>
-    </section>`;
+    <details class="carte rubrique">
+      <summary>Sources et crédits photo${icone("chevron", "chevron")}</summary>
+      <div class="rubrique-corps">
+        <p class="petit">Contenu pédagogique rédigé pour la préparation à l'examen du permis de chasser, à compléter avec le manuel officiel. Sans photo d'empreinte libre, l'empreinte est montrée par un schéma simplifié. Photos sous licence libre provenant de Wikimedia Commons.</p>
+        <ul class="credits">
+          ${ESPECES.map((e) => {
+            const liste = [...toutesPhotos(e.id), ...(photosTraces[e.id] || []).map((p) => ({ ...p, auteur: `empreinte : ${p.auteur || "Wikimedia Commons"}` }))];
+            if (!liste.length) return "";
+            return `<li><strong>${h(e.nom)}</strong> : ${liste.map((p) => `${h(p.auteur || "Wikimedia Commons")}${p.licence ? `, ${h(p.licence)}` : ""}${p.source ? ` (<a href="${h(p.source)}" target="_blank" rel="noopener">source</a>)` : ""}`).join(" ; ")}</li>`;
+          }).join("")}
+        </ul>
+      </div>
+    </details>`;
 
   $("#precharger").onclick = async () => {
     const etatEl = $("#etat-telechargement");
     etatEl.textContent = "Téléchargement…";
     await prechargerPhotos((f, t) => { etatEl.textContent = `${f} / ${t} photos téléchargées`; });
     etatEl.textContent = "Photos disponibles hors connexion.";
-  };
-  let arme = false;
-  $("#reinit").onclick = () => {
-    if (!arme) { arme = true; $("#confirmation").hidden = false; return; }
-    stats = statsVides();
-    sauverStats();
-    rendreInfos();
   };
 }
 
@@ -802,10 +893,10 @@ function aller(vue) {
 }
 
 function rendre() {
-  const onglet = { accueil: "accueil", quiz: "accueil", score: "accueil", fiches: "fiches", fiche: "fiches", infos: "infos" }[etat.vue];
+  const onglet = { accueil: "accueil", quiz: "accueil", score: "accueil", fiches: "fiches", fiche: "fiches", progres: "progres", infos: "infos" }[etat.vue];
   document.querySelectorAll(".onglet").forEach((b) => b.setAttribute("aria-current", b.dataset.vue === onglet ? "page" : "false"));
   document.body.dataset.vue = etat.vue;
-  ({ accueil: rendreAccueil, quiz: rendreQuiz, score: rendreScore, fiches: rendreFiches, fiche: rendreFiche, infos: rendreInfos })[etat.vue]();
+  ({ accueil: rendreAccueil, quiz: rendreQuiz, score: rendreScore, fiches: rendreFiches, fiche: rendreFiche, progres: rendreProgres, infos: rendreInfos })[etat.vue]();
 }
 
 // ---------- Démarrage ----------
@@ -816,7 +907,7 @@ Promise.all([chargerPhotos(), chargerTraces(), chargerQuestions()]).then(([p, t,
   photosTraces = t;
   QUESTIONS = q.questions;
   THEMES_Q = q.themes;
-  if (["accueil", "fiches", "fiche", "infos"].includes(etat.vue)) rendre();
+  if (["accueil", "fiches", "fiche", "progres", "infos"].includes(etat.vue)) rendre();
 });
 
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
