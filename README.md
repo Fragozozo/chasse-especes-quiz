@@ -11,7 +11,8 @@ En ligne : https://fragozozo.github.io/chasse-especes-quiz/
   migrateurs terrestres, corvidés, canards et oies, limicoles et oiseaux d'eau, rapaces.
 - Pour chaque espèce, une fiche : statut (chassable, ESOD, chasse suspendue, protégée, ni gibier ni protégée), taille et poids,
   identification, mâle / femelle / jeune et leur nom, habitat, alimentation, reproduction, particularités,
-  empreinte (photo pour 32 espèces, schéma simplifié sinon), risques de confusion.
+  empreinte (photo pour 32 espèces, schéma simplifié sinon), risques de confusion, carte de présence
+  par département (observations GBIF depuis 2000) et état de la population (1 à 3 étoiles).
 - 3 à 5 photos par espèce, en distinguant mâle, femelle et jeune quand c'est utile.
 - 188 questions de l'épreuve théorique, dont 12 situations de tir illustrées (« Pouvez-vous tirer ? »), sur les 4 thèmes de l'examen (faune et habitats, chasse,
   lois et réglementation, armes et sécurité), avec 4 réponses, une explication, et un examen blanc
@@ -27,6 +28,11 @@ Une question peut porter une image (`![description](images/fichier.jpg)`, images
 modifier un fichier ou en déposer un nouveau, puis pousser sur GitHub : l'app trouve tous les fichiers
 du dossier. Le format est décrit dans `questions/LISEZMOI.md` ; `node tools/verifier-questions.mjs`
 vérifie les fichiers avant de les pousser.
+
+## Cartes de présence et populations
+`node tools/repartition.mjs` régénère `js/france.js` (contours des départements, IGN Admin Express) et
+`js/repartition.js` (observations GBIF par département). L'état des populations (1 à 3 étoiles, avec une
+phrase d'explication) se règle à la main dans `js/populations.js`.
 
 ## Photos
 Photos sous licence libre issues de Wikimedia Commons, choisies à la main, avec auteur et licence

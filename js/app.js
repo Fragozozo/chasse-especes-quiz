@@ -1,6 +1,7 @@
-import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=10";
-import { chargerQuestions } from "./questions.js?v=10";
-import { TRACES } from "./traces.js?v=10";
+import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=11";
+import { chargerQuestions } from "./questions.js?v=11";
+import { TRACES } from "./traces.js?v=11";
+import { POPULATIONS, NIVEAUX } from "./populations.js?v=11";
 
 // ---------- Utilitaires ----------
 const $ = (sel, el = document) => el.querySelector(sel);
@@ -71,7 +72,7 @@ let photos = {};
 let photosTraces = {};
 async function chargerCredits(fichier, dossier) {
   try {
-    const r = await fetch(`${fichier}?v=10`);
+    const r = await fetch(`${fichier}?v=11`);
     if (!r.ok) return {};
     const d = await r.json();
     for (const liste of Object.values(d)) for (const p of liste) p.src = dossier + p.fichierLocal;
@@ -708,6 +709,49 @@ function ouvrirFiche(id) {
 
 const legende = (e, p) => (p?.role ? libelleRole(e, p.role) : "");
 
+// État de la population : de 1 à 3 étoiles.
+function etoilesHtml(e) {
+  const pop = POPULATIONS[e.id];
+  if (!pop) return "";
+  const [n, note] = pop;
+  return `<div class="population p${n}">
+    <span class="etoiles" role="img" aria-label="${n} étoile${n > 1 ? "s" : ""} sur 3">${[1, 2, 3].map((i) => `<span class="${i <= n ? "pleine" : ""}">★</span>`).join("")}</span>
+    <span><b>${h(NIVEAUX[n])}</b><small>${h(note)}</small></span>
+  </div>`;
+}
+
+// Carte de présence : chargée à la première fiche ouverte (fichiers lourds), puis gardée en mémoire.
+let CARTE = null;
+const chargerCarte = () => CARTE ||= Promise.all([import("./france.js?v=11"), import("./repartition.js?v=11")])
+  .then(([f, r]) => ({ france: f.FRANCE, repartition: r.REPARTITION }));
+
+// Classe chaque département : présence régulière, occasionnelle ou non signalée.
+// La référence est le 5e département le mieux renseigné, pour qu'un seul département très observé ne fausse pas tout.
+function classesPresence(compte) {
+  const valeurs = Object.values(compte).sort((a, b) => b - a);
+  const ref = valeurs[Math.min(4, valeurs.length - 1)] || 0;
+  const seuil = Math.max(10, ref * 0.05);
+  const res = {};
+  for (const [code, n] of Object.entries(compte)) {
+    if (n >= seuil) res[code] = "reguliere";
+    else if (n >= 3) res[code] = "occasionnelle";
+  }
+  return res;
+}
+
+function carteHtml(france, compte) {
+  const cl = classesPresence(compte || {});
+  const n = Object.values(cl).filter((c) => c === "reguliere").length;
+  return `<svg class="carte-france" viewBox="-4 -4 ${france.largeur + 8} ${france.hauteur + 8}" role="img" aria-label="Présence dans ${n} départements">
+      ${Object.entries(france.departements).map(([code, d]) => `<path class="${cl[code] || "absente"}" d="${d.d}"><title>${h(d.nom)}</title></path>`).join("")}
+    </svg>
+    <div class="legende-carte">
+      <span><i class="reguliere"></i>Présence régulière</span>
+      <span><i class="occasionnelle"></i>Observations occasionnelles</span>
+    </div>
+    <p class="petit">Observations depuis 2000 recensées par le GBIF, par département. Elles reflètent aussi l'effort d'observation et incluent les oiseaux de passage.</p>`;
+}
+
 function rendreFiche() {
   const e = parId[etat.fiche];
   const liste = toutesPhotos(e.id);
@@ -741,6 +785,7 @@ function rendreFiche() {
     <div class="statut-bloc s-${e.statut}">
       <p><strong>${h(STATUTS[e.statut].nom)}${e.esod ? ` (groupe ${e.esod})` : ""}.</strong> ${h(e.chasse)}</p>
     </div>
+    ${etoilesHtml(e)}
 
     ${liste.length ? `<div class="carrousel" aria-label="Photos">
       ${liste.map((p) => `<figure class="diapo">
@@ -757,6 +802,7 @@ function rendreFiche() {
 
     <div class="rubriques">
       ${rubrique("Identification", `<ul class="signes">${e.signes.map((x) => `<li>${h(x)}</li>`).join("")}</ul>`, true)}
+      ${rubrique("Présence en France", `<div id="carte-presence"><p class="petit">Chargement de la carte…</p></div>`, true)}
       ${rubrique("Mâle, femelle et jeune", `
         ${noms.length ? `<dl class="noms">${noms.map((r) => `<div><dt>${ROLES[r]}</dt><dd>${h(nomPropre(e, r))}</dd></div>`).join("")}</dl>` : ""}
         <p>${h(e.sexes)}</p>`)}
@@ -787,6 +833,10 @@ function rendreFiche() {
     </nav>`;
 
   $("#retour").onclick = () => aller("fiches");
+  chargerCarte().then(({ france, repartition }) => {
+    const zone = $("#carte-presence");
+    if (zone && etat.fiche === e.id) zone.innerHTML = carteHtml(france, repartition[e.id]);
+  }).catch(() => { const z = $("#carte-presence"); if (z) z.innerHTML = `<p class="petit">Carte indisponible hors connexion pour l'instant.</p>`; });
   app().querySelectorAll(".nav-fiche").forEach((b) => b.addEventListener("click", () => {
     if (!b.dataset.id) return;
     etat.fiche = b.dataset.id;
@@ -904,7 +954,7 @@ function rendreInfos() {
     <details class="carte rubrique">
       <summary>Sources et crédits photo${icone("chevron", "chevron")}</summary>
       <div class="rubrique-corps">
-        <p class="petit">Contenu pédagogique rédigé pour la préparation à l'examen du permis de chasser, à compléter avec le manuel officiel. Sans photo d'empreinte libre, l'empreinte est montrée par un schéma simplifié. Photos sous licence libre provenant de Wikimedia Commons.</p>
+        <p class="petit">Contenu pédagogique rédigé pour la préparation à l'examen du permis de chasser, à compléter avec le manuel officiel. Sans photo d'empreinte libre, l'empreinte est montrée par un schéma simplifié. Photos sous licence libre provenant de Wikimedia Commons. Cartes de présence : observations du GBIF (gbif.org) depuis 2000 ; contours des départements IGN Admin Express (Licence ouverte). L'état des populations est une appréciation d'ensemble au niveau national, à nuancer localement.</p>
         <ul class="credits">
           ${ESPECES.map((e) => {
             const liste = [...toutesPhotos(e.id), ...(photosTraces[e.id] || []).map((p) => ({ ...p, auteur: `empreinte : ${p.auteur || "Wikimedia Commons"}` }))];

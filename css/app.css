@@ -377,3 +377,25 @@ body[data-vue="quiz"] .onglets { display: none; }
 .tuile-categorie:active { transform: scale(.98); }
 .titre-page h1 { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .titre-page .bouton-icone + h1 { font-size: 1.3rem; }
+
+/* ---------- État de la population ---------- */
+.population { display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--trait); border-radius: 12px; padding: 10px 14px; }
+.population > span:last-child { display: flex; flex-direction: column; min-width: 0; }
+.population b { font-size: .92rem; }
+.population small { font-size: .82rem; color: var(--encre-douce); }
+.etoiles { display: flex; gap: 1px; font-size: 1.35rem; line-height: 1; color: var(--trait); flex: none; }
+.population.p1 .pleine { color: var(--ko); }
+.population.p2 .pleine { color: var(--t-chasse); }
+.population.p3 .pleine { color: var(--ok); }
+
+/* ---------- Carte de présence ---------- */
+.carte-france { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.carte-france path { stroke: var(--surface); stroke-width: .7; stroke-linejoin: round; }
+.carte-france .absente { fill: var(--surface-2); stroke: var(--trait); }
+.carte-france .occasionnelle { fill: color-mix(in srgb, var(--t-faune) 35%, var(--surface)); }
+.carte-france .reguliere { fill: var(--t-faune); }
+.legende-carte { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .82rem; color: var(--encre-douce); }
+.legende-carte span { display: flex; align-items: center; gap: 6px; }
+.legende-carte i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+.legende-carte .reguliere { background: var(--t-faune); }
+.legende-carte .occasionnelle { background: color-mix(in srgb, var(--t-faune) 35%, var(--surface)); }
