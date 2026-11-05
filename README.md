@@ -20,6 +20,8 @@ En ligne : https://fragozozo.github.io/chasse-especes-quiz/
 - Entraînements, sur toutes les espèces ou par thème (groupe, ESOD, espèces protégées) : reconnaître
   l'espèce, tirer ou ne pas tirer (statut), mâle / femelle / jeune, empreintes, reproduction et vocabulaire,
   questions de connaissances, examen blanc de 20 questions, révision des erreurs.
+- Suivi des progrès, enregistré sur l'appareil : réussite par thème, espèces maîtrisées, et nombre de
+  consultations de chaque fiche (pastille sur sa photo dans la liste, remise à zéro depuis Progrès).
 
 ## Questions de l'épreuve théorique
 Les questions sont dans des fichiers Markdown du dossier `questions/` (un par thème, plus `situations.md`

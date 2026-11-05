@@ -281,6 +281,9 @@ p { margin: 0; }
 .coche { color: var(--ok); font-weight: 800; }
 
 .fiche-tete { display: flex; gap: 14px; align-items: center; }
+.vignette-cadre { position: relative; flex: none; }
+.nb-vues { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--encre); color: var(--surface); border: 2px solid var(--surface); font-size: .7rem; font-weight: 700; line-height: 16px; text-align: center; font-variant-numeric: tabular-nums; box-sizing: border-box; }
+.carte .bouton.secondaire { margin-top: 10px; }
 .fiche-tete .vignette { width: 84px; height: 84px; border-radius: 14px; }
 .fiche-titre { font-size: 1.55rem; }
 .statut-bloc { border-radius: 12px; padding: 11px 14px; background: color-mix(in srgb, var(--c) 11%, var(--surface)); border-left: 4px solid var(--c); font-size: .92rem; }

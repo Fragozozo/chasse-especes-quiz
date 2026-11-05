@@ -1,7 +1,7 @@
-import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=11";
-import { chargerQuestions } from "./questions.js?v=11";
-import { TRACES } from "./traces.js?v=11";
-import { POPULATIONS, NIVEAUX } from "./populations.js?v=11";
+import { GROUPES, STATUTS, GROUPES_ESOD, ESPECES } from "./especes.js?v=12";
+import { chargerQuestions } from "./questions.js?v=12";
+import { TRACES } from "./traces.js?v=12";
+import { POPULATIONS, NIVEAUX } from "./populations.js?v=12";
 
 // ---------- Utilitaires ----------
 const $ = (sel, el = document) => el.querySelector(sel);
@@ -54,6 +54,18 @@ let stats = lireStats();
 function sauverStats() {
   try { localStorage.setItem(STATS, JSON.stringify(stats)); } catch {}
 }
+// Nombre de consultations de chaque fiche (compteur à part, remis à zéro depuis Progrès).
+const VUES = "consultations-v1";
+let vues = (() => { try { return JSON.parse(localStorage.getItem(VUES)) || {}; } catch { return {}; } })();
+function compterVue(id) {
+  vues[id] = (vues[id] || 0) + 1;
+  try { localStorage.setItem(VUES, JSON.stringify(vues)); } catch {}
+}
+function effacerVues() {
+  vues = {};
+  try { localStorage.removeItem(VUES); } catch {}
+}
+
 function noter(type, cle, ok) {
   const t = (stats[type][cle] ||= { ok: 0, total: 0, dernier: false });
   t.total++;
@@ -72,7 +84,7 @@ let photos = {};
 let photosTraces = {};
 async function chargerCredits(fichier, dossier) {
   try {
-    const r = await fetch(`${fichier}?v=11`);
+    const r = await fetch(`${fichier}?v=12`);
     if (!r.ok) return {};
     const d = await r.json();
     for (const liste of Object.values(d)) for (const p of liste) p.src = dossier + p.fichierLocal;
@@ -663,7 +675,7 @@ function rendreFiches() {
         <ul class="fiches">
           ${liste.map((e) => `
             <li><button type="button" class="fiche-ligne" data-id="${e.id}">
-              ${vignette(e)}
+              <span class="vignette-cadre">${vignette(e)}${vues[e.id] ? `<span class="nb-vues" aria-label="Consultée ${vues[e.id]} fois">${vues[e.id] > 99 ? "99+" : vues[e.id]}</span>` : ""}</span>
               <span class="fiche-texte"><span class="fiche-nom">${h(e.nom)}${maitrisee(e.id) ? ` <span class="coche" title="Maîtrisée">✓</span>` : ""}</span><span class="fiche-sous">${h(e.latin)}</span></span>
               ${pastille(e)}
               ${icone("chevron", "chevron")}
@@ -702,6 +714,7 @@ function rendreFiches() {
 
 function ouvrirFiche(id) {
   etat.fiche = id;
+  compterVue(id);
   etat.vue = "fiche";
   rendre();
   window.scrollTo(0, 0);
@@ -722,7 +735,7 @@ function etoilesHtml(e) {
 
 // Carte de présence : chargée à la première fiche ouverte (fichiers lourds), puis gardée en mémoire.
 let CARTE = null;
-const chargerCarte = () => CARTE ||= Promise.all([import("./france.js?v=11"), import("./repartition.js?v=11")])
+const chargerCarte = () => CARTE ||= Promise.all([import("./france.js?v=12"), import("./repartition.js?v=12")])
   .then(([f, r]) => ({ france: f.FRANCE, repartition: r.REPARTITION }));
 
 // Classe chaque département : présence régulière, occasionnelle ou non signalée.
@@ -762,9 +775,9 @@ function rendreFiche() {
   const oiseau = estOiseau(e);
   const noms = Object.keys(ROLES).filter((r) => nomPropre(e, r));
   const t = TRACES[e.trace];
-  // Rubrique repliable ; l'identification est ouverte par défaut.
-  const rubrique = (titre, contenu, ouverte = false) => `
-    <details class="rubrique" ${ouverte ? "open" : ""}><summary>${titre}${icone("chevron", "chevron")}</summary><div class="rubrique-corps">${contenu}</div></details>`;
+  // Rubrique repliable, ouverte par défaut.
+  const rubrique = (titre, contenu) => `
+    <details class="rubrique" open><summary>${titre}${icone("chevron", "chevron")}</summary><div class="rubrique-corps">${contenu}</div></details>`;
 
   app().innerHTML = `
     <div class="quiz-barre">
@@ -801,8 +814,8 @@ function rendreFiche() {
     </dl>
 
     <div class="rubriques">
-      ${rubrique("Identification", `<ul class="signes">${e.signes.map((x) => `<li>${h(x)}</li>`).join("")}</ul>`, true)}
-      ${rubrique("Présence en France", `<div id="carte-presence"><p class="petit">Chargement de la carte…</p></div>`, true)}
+      ${rubrique("Identification", `<ul class="signes">${e.signes.map((x) => `<li>${h(x)}</li>`).join("")}</ul>`)}
+      ${rubrique("Présence en France", `<div id="carte-presence"><p class="petit">Chargement de la carte…</p></div>`)}
       ${rubrique("Mâle, femelle et jeune", `
         ${noms.length ? `<dl class="noms">${noms.map((r) => `<div><dt>${ROLES[r]}</dt><dd>${h(nomPropre(e, r))}</dd></div>`).join("")}</dl>` : ""}
         <p>${h(e.sexes)}</p>`)}
@@ -840,6 +853,7 @@ function rendreFiche() {
   app().querySelectorAll(".nav-fiche").forEach((b) => b.addEventListener("click", () => {
     if (!b.dataset.id) return;
     etat.fiche = b.dataset.id;
+    compterVue(b.dataset.id);
     rendreFiche();
     window.scrollTo(0, 0);
   }));
@@ -853,6 +867,8 @@ function rendreProgres() {
   const meilleur = examens.reduce((m, x) => Math.max(m, x.score), 0);
   const nbQ = ratees.questions(), nbE = ratees.especes();
   const date = (iso) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  const nbVues = ESPECES.filter((e) => vues[e.id]).length;
+  const totalVues = Object.values(vues).reduce((a, n) => a + n, 0);
   const barre = (pct, classe) => `<div class="barre ${classe}"><div style="width:${pct}%"></div></div>`;
 
   app().innerHTML = `
@@ -885,6 +901,15 @@ function rendreProgres() {
     </section>` : ""}
 
     <section class="carte">
+      <h2>Fiches consultées</h2>
+      <div class="progres-ligne"><span>Espèces consultées</span><b>${nbVues}/${ESPECES.length}</b></div>
+      <div class="progres-ligne"><span>Consultations au total</span><b>${totalVues}</b></div>
+      <p class="petit">Le nombre de consultations s'affiche en pastille sur la photo de chaque espèce, dans la liste des fiches.</p>
+      ${totalVues ? `<button type="button" class="bouton secondaire" id="reinit-vues">Remettre le compteur à zéro</button>
+      <p id="confirmation-vues" class="petit" hidden>Touche encore une fois pour confirmer.</p>` : ""}
+    </section>
+
+    <section class="carte">
       <h2>Derniers entraînements</h2>
       ${stats.sessions.length ? `<ul class="historique">${stats.sessions.slice(-8).reverse().map((x) => `
         <li><span>${h(x.titre || MODES[x.mode]?.nom || "")}<small>${date(x.date)}</small></span><b class="${x.elimine ? "ko" : ""}">${x.elimine ? "Éliminé · " : ""}${x.score}/${x.total}</b></li>`).join("")}</ul>`
@@ -895,6 +920,13 @@ function rendreProgres() {
     <p id="confirmation" class="petit" hidden>Touche encore une fois pour confirmer.</p>`;
 
   app().querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => demarrer(b.dataset.mode)));
+  let armeVues = false;
+  const rv = $("#reinit-vues");
+  if (rv) rv.onclick = () => {
+    if (!armeVues) { armeVues = true; $("#confirmation-vues").hidden = false; return; }
+    effacerVues();
+    rendreProgres();
+  };
   let arme = false;
   $("#reinit").onclick = () => {
     if (!arme) { arme = true; $("#confirmation").hidden = false; return; }
